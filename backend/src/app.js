@@ -5,6 +5,7 @@ const childRoutes = require("./routes/childRoutes");
 const authRoutes = require("./routes/authRoutes");
 const screenTimeRoutes = require("./routes/screenTimeRoutes");
 const sleepRoutes = require("./routes/sleepRoutes");
+const outdoorActivityRoutes = require("./routes/outdoorActivityRoutes");
 
 const app = express();
 
@@ -21,5 +22,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/children", childRoutes);
 app.use("/api/screen-time", screenTimeRoutes);
 app.use("/api/sleep", sleepRoutes);
+app.use("/api/outdoor-activities", outdoorActivityRoutes);
 
 module.exports = app;
