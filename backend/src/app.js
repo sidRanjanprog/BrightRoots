@@ -3,6 +3,7 @@ const cors = require("cors");
 
 const childRoutes = require("./routes/childRoutes");
 const authRoutes = require("./routes/authRoutes");
+const screenTimeRoutes = require("./routes/screenTimeRoutes");
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/children", childRoutes);
+app.use("/api/screen-time", screenTimeRoutes);
 
 module.exports = app;
