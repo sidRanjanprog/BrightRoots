@@ -33,40 +33,63 @@ const getRecommendations = async (req, res) => {
       child: child._id,
     });
 
-    const totalScreenTime = screenTimes.reduce(
-      (sum, item) => sum + item.durationMinutes,
-      0
-    );
+    const avgScreenTime =
+  screenTimes.length > 0
+    ? screenTimes.reduce(
+        (sum, item) => sum + item.durationMinutes,
+        0
+      ) / screenTimes.length
+    : 0;
 
-    const avgSleep =
-      sleepRecords.length > 0
-        ? sleepRecords.reduce(
-            (sum, item) => sum + item.sleepHours,
-            0
-          ) / sleepRecords.length
-        : 0;
+const avgSleep =
+  sleepRecords.length > 0
+    ? sleepRecords.reduce(
+        (sum, item) => sum + item.sleepHours,
+        0
+      ) / sleepRecords.length
+    : 0;
 
-    const totalOutdoorTime = outdoorActivities.reduce(
-      (sum, item) => sum + item.durationMinutes,
-      0
-    );
+    const avgOutdoorTime =
+    outdoorActivities.length > 0
+    ? outdoorActivities.reduce(
+        (sum, item) => sum + item.durationMinutes,
+        0
+      ) / outdoorActivities.length
+    : 0;
 
-    const recommendations =
-      generateRecommendations({
-        screenTimeMinutes: totalScreenTime,
+    const analysis =
+    generateRecommendations({
+        screenTimeMinutes: avgScreenTime,
         sleepHours: avgSleep,
-        outdoorMinutes: totalOutdoorTime,
-      });
+        outdoorMinutes: avgOutdoorTime,
+
+        hasScreenData: screenTimes.length > 0,
+        hasSleepData: sleepRecords.length > 0,
+        hasOutdoorData:
+        outdoorActivities.length > 0,
+    });
 
     res.status(200).json({
-      success: true,
-      child: child.name,
-      metrics: {
-        totalScreenTime,
+    success: true,
+    child: child.name,
+
+    metrics: {
+        avgScreenTime,
         avgSleep,
-        totalOutdoorTime,
-      },
-      recommendations,
+        avgOutdoorTime,
+    },
+
+    wellnessScore:
+        analysis.wellnessScore,
+
+    riskLevel:
+        analysis.riskLevel,
+
+    dataWarnings:
+        analysis.dataWarnings,
+
+    recommendations:
+        analysis.recommendations,
     });
   } catch (error) {
     console.error(error);
