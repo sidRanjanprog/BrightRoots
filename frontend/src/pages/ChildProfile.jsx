@@ -22,7 +22,7 @@ const ChildProfile = () => {
 
   useEffect(() => {
     fetchChild();
-  }, []);
+  }, [id]);
 
   if (!child) {
     return (
