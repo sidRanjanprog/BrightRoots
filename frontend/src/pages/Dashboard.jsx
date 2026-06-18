@@ -1,11 +1,158 @@
+import { useEffect, useState } from "react";
+import {
+  getChildren,
+  createChild,
+} from "../services/childService";
+
 const Dashboard = () => {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <h1 className="text-4xl font-bold">
-          Dashboard
-        </h1>
-      </div>
-    );
+  const [children, setChildren] = useState([]);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    age: "",
+    gender: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
+
+  const fetchChildren = async () => {
+    try {
+      const data = await getChildren();
   
-  export default Dashboard;
+      console.log(data);
+  
+      setChildren(data.children);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await createChild(formData);
+
+      console.log(response);
+
+      await fetchChildren();
+
+      setFormData({
+        name: "",
+        age: "",
+        gender: "",
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchChildren();
+  }, []);
+
+  console.log("Children State:", children);
+
+  return (
+    <div className="max-w-4xl mx-auto p-8">
+      <h1 className="text-4xl font-bold mb-8">
+        Dashboard
+      </h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded shadow mb-8"
+      >
+        <h2 className="text-2xl font-semibold mb-4">
+          Add Child
+        </h2>
+
+        <input
+          type="text"
+          name="name"
+          placeholder="Child Name"
+          className="w-full border p-3 mb-4 rounded"
+          value={formData.name}
+          onChange={handleChange}
+        />
+
+        <input
+          type="number"
+          name="age"
+          placeholder="Age"
+          className="w-full border p-3 mb-4 rounded"
+          value={formData.age}
+          onChange={handleChange}
+        />
+
+        <select
+          name="gender"
+          className="w-full border p-3 mb-4 rounded"
+          value={formData.gender}
+          onChange={handleChange}
+        >
+          <option value="">
+            Select Gender
+          </option>
+
+          <option value="Male">
+            Male
+          </option>
+
+          <option value="Female">
+            Female
+          </option>
+        </select>
+
+        <button
+          type="submit"
+          className="bg-green-600 text-white px-6 py-3 rounded"
+        >
+          Add Child
+        </button>
+      </form>
+
+      <p>Total Children: {children.length}</p>
+
+      <div className="bg-red-500 text-white p-4 mb-4">
+        TEST BLOCK
+      </div>
+
+      <div className="bg-white p-6 rounded shadow">
+        <h2 className="text-2xl font-semibold mb-4">
+          Children
+        </h2>
+
+        {children.length === 0 ? (
+          <p>No children added yet.</p>
+        ) : (
+          children.map((child) => (
+            <div
+              key={child._id}
+              className="border p-4 rounded mb-3"
+            >
+              <p>
+                <strong>Name:</strong> {child.name}
+              </p>
+
+              <p>
+                <strong>Age:</strong> {child.age}
+              </p>
+
+              <p>
+                <strong>Gender:</strong> {child.gender}
+              </p>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
