@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getChildren,
   createChild,
@@ -6,6 +7,7 @@ import {
 
 const Dashboard = () => {
   const [children, setChildren] = useState([]);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -139,14 +141,23 @@ const Dashboard = () => {
               <p>
                 <strong>Name:</strong> {child.name}
               </p>
-
+          
               <p>
                 <strong>Age:</strong> {child.age}
               </p>
-
+          
               <p>
                 <strong>Gender:</strong> {child.gender}
               </p>
+          
+              <button
+                onClick={() =>
+                  navigate(`/dashboard/child/${child._id}`)
+                }
+                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+              >
+                View Profile
+              </button>
             </div>
           ))
         )}

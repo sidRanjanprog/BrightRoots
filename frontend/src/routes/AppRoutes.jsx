@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ChildProfile from "../pages/ChildProfile";
 
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -12,6 +13,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/dashboard/child/:id" element={<ProtectedRoute><ChildProfile /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );

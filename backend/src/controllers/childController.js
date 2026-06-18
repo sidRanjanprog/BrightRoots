@@ -113,10 +113,39 @@ const getMyChildren = async (req, res) => {
       });
     }
   };
+
+  const getChildById = async (req, res) => {
+    try {
+      const child = await Child.findOne({
+        _id: req.params.id,
+        parent: req.user.userId,
+      });
+  
+      if (!child) {
+        return res.status(404).json({
+          success: false,
+          message: "Child not found",
+        });
+      }
+  
+      res.status(200).json({
+        success: true,
+        child,
+      });
+    } catch (error) {
+      console.error(error);
+  
+      res.status(500).json({
+        success: false,
+        message: "Server Error",
+      });
+    }
+  };
   
 module.exports = {
   createChild,
   getMyChildren,
+  getChildById,
   updateChild,
   deleteChild,
 };
