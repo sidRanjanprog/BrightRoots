@@ -293,6 +293,28 @@ const ChildProfile = () => {
     ],
   };
 
+  const sleepChartData = {
+    labels: sleepRecords.map(
+      (record) =>
+        new Date(
+          record.date
+        ).toLocaleDateString()
+    ),
+  
+    datasets: [
+      {
+        label: "Sleep Hours",
+        data: sleepRecords.map(
+          (record) =>
+            record.sleepHours
+        ),
+        borderColor: "rgb(34,197,94)",
+        backgroundColor:
+          "rgba(34,197,94,0.5)",
+      },
+    ],
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-4xl font-bold mb-8">
@@ -476,7 +498,8 @@ const ChildProfile = () => {
           Save Sleep Record
         </button>
       </form>
-
+      
+      {/* Sleep History*/}
       <div className="bg-white p-6 rounded shadow mt-8">
         <h2 className="text-2xl font-semibold mb-4">
           Sleep History
@@ -509,6 +532,16 @@ const ChildProfile = () => {
             </div>
           ))
         )}
+      </div>
+
+      <div className="bg-white p-6 rounded shadow mt-8">
+        <h2 className="text-2xl font-semibold mb-4">
+          Sleep Trend
+        </h2>
+
+        <Line
+          data={sleepChartData}
+        />
       </div>
 
       <form
