@@ -13,6 +13,11 @@ import {
   getSleepRecords,
 } from "../services/sleepService";
 
+import {
+  createOutdoorActivity,
+  getOutdoorActivities,
+} from "../services/outdoorActivityService";
+
 const ChildProfile = () => {
   const { id } = useParams();
 
@@ -38,6 +43,16 @@ const ChildProfile = () => {
     sleepQuality: "Good",
   });
 
+  const [outdoorActivities, setOutdoorActivities] =
+  useState([]);
+
+  const [outdoorData, setOutdoorData] =
+  useState({
+    date: "",
+    activityType: "",
+    durationMinutes: "",
+  });
+
   const handleScreenTimeChange = (
     e
   ) => {
@@ -52,6 +67,15 @@ const ChildProfile = () => {
   ) => {
     setSleepData({
       ...sleepData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleOutdoorChange = (
+    e
+  ) => {
+    setOutdoorData({
+      ...outdoorData,
       [e.target.name]: e.target.value,
     });
   };
@@ -81,6 +105,32 @@ const ChildProfile = () => {
       console.error(error);
     }
   };
+
+  const handleOutdoorSubmit = async (
+  e
+) => {
+  e.preventDefault();
+
+  try {
+    const response =
+      await createOutdoorActivity({
+        childId: child._id,
+        ...outdoorData,
+      });
+
+    console.log(response);
+
+    await fetchOutdoorActivities();
+
+    setOutdoorData({
+      date: "",
+      activityType: "",
+      durationMinutes: "",
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   const handleScreenTimeSubmit = async (
     e
@@ -147,10 +197,26 @@ const ChildProfile = () => {
     }
   };
 
+  const fetchOutdoorActivities = async () => {
+    try {
+      const data =
+        await getOutdoorActivities(id);
+
+      console.log(data);
+
+      setOutdoorActivities(
+        data.activities
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchChild();
     fetchScreenTimes();
     fetchSleepRecords();
+    fetchOutdoorActivities;
   }, [id]);
 
   if (!child) {
@@ -361,6 +427,83 @@ const ChildProfile = () => {
               <p>
                 <strong>Quality:</strong>{" "}
                 {record.sleepQuality}
+              </p>
+            </div>
+          ))
+        )}
+      </div>
+
+      <form
+        onSubmit={handleOutdoorSubmit}
+        className="bg-white p-6 rounded shadow mt-8">
+
+        <h2 className="text-2xl font-semibold mb-4">
+          Add Outdoor Activity
+        </h2>
+
+        <input
+          type="date"
+          name="date"
+          className="w-full border p-3 mb-4 rounded"
+          value={outdoorData.date}
+          onChange={handleOutdoorChange}
+          max={new Date().toISOString().split("T")[0]}
+        />
+
+        <input
+          type="text"
+          name="activityType"
+          placeholder="Activity Type"
+          className="w-full border p-3 mb-4 rounded"
+          value={outdoorData.activityType}
+          onChange={handleOutdoorChange}
+        />
+
+        <input
+          type="number"
+          name="durationMinutes"
+          placeholder="Duration (Minutes)"
+          className="w-full border p-3 mb-4 rounded"
+          value={outdoorData.durationMinutes}
+          onChange={handleOutdoorChange}
+        />
+
+        <button
+          type="submit"
+          className="bg-orange-600 text-white px-6 py-3 rounded"
+        >
+          Save Outdoor Activity
+        </button>
+      </form>
+
+      <div className="bg-white p-6 rounded shadow mt-8">
+        <h2 className="text-2xl font-semibold mb-4">
+          Outdoor Activity History
+        </h2>
+
+        {outdoorActivities.length === 0 ? (
+          <p>No outdoor activities yet.</p>
+        ) : (
+          outdoorActivities.map((activity) => (
+            <div
+              key={activity._id}
+              className="border p-4 rounded mb-3"
+            >
+              <p>
+                <strong>Date:</strong>{" "}
+                {new Date(
+                  activity.date
+                ).toLocaleDateString()}
+              </p>
+
+              <p>
+                <strong>Activity:</strong>{" "}
+                {activity.activityType}
+              </p>
+
+              <p>
+                <strong>Duration:</strong>{" "}
+                {activity.durationMinutes} mins
               </p>
             </div>
           ))
