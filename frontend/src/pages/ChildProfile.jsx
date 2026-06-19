@@ -315,6 +315,33 @@ const ChildProfile = () => {
     ],
   };
 
+  const outdoorActivityChartData = {
+    labels: outdoorActivities.map(
+      (activity) =>
+        new Date(
+          activity.date
+        ).toLocaleDateString()
+    ),
+  
+    datasets: [
+      {
+        label:
+          "Outdoor Activity (Minutes)",
+  
+        data: outdoorActivities.map(
+          (activity) =>
+            activity.durationMinutes
+        ),
+  
+        borderColor:
+          "rgb(249,115,22)",
+  
+        backgroundColor:
+          "rgba(249,115,22,0.5)",
+      },
+    ],
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-4xl font-bold mb-8">
@@ -534,6 +561,7 @@ const ChildProfile = () => {
         )}
       </div>
 
+      {/* Sleep Trend Chart */}
       <div className="bg-white p-6 rounded shadow mt-8">
         <h2 className="text-2xl font-semibold mb-4">
           Sleep Trend
@@ -544,6 +572,7 @@ const ChildProfile = () => {
         />
       </div>
 
+      {/* Outdoor Activity Form */}
       <form
         onSubmit={handleOutdoorSubmit}
         className="bg-white p-6 rounded shadow mt-8">
@@ -587,6 +616,7 @@ const ChildProfile = () => {
         </button>
       </form>
 
+      {/* Outdoor Activity History */}
       <div className="bg-white p-6 rounded shadow mt-8">
         <h2 className="text-2xl font-semibold mb-4">
           Outdoor Activity History
@@ -619,6 +649,17 @@ const ChildProfile = () => {
             </div>
           ))
         )}
+      </div>
+
+      {/* Outdoor Activity Trend Chart */}
+      <div className="bg-white p-6 rounded shadow mt-8">
+        <h2 className="text-2xl font-semibold mb-4">
+          Outdoor Activity Trend
+        </h2>
+
+        <Line
+          data={outdoorActivityChartData}
+        />
       </div>
 
       <div className="bg-white p-6 rounded shadow mt-8">
