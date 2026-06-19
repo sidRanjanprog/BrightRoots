@@ -1,3 +1,15 @@
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+import { Line } from "react-chartjs-2";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -21,6 +33,16 @@ import {
 import {
   getRecommendations,
 } from "../services/recommendationService";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const ChildProfile = () => {
   const { id } = useParams();
@@ -102,7 +124,7 @@ const ChildProfile = () => {
   
       console.log(response);
 
-      fetchSleepRecords();
+      await fetchSleepRecords();
   
       setSleepData({
         date: "",
@@ -238,7 +260,7 @@ const ChildProfile = () => {
     fetchChild();
     fetchScreenTimes();
     fetchSleepRecords();
-    fetchOutdoorActivities;
+    fetchOutdoorActivities();
   }, [id]);
 
   if (!child) {
@@ -248,6 +270,28 @@ const ChildProfile = () => {
       </div>
     );
   }
+
+  const screenTimeChartData = {
+    labels: screenTimes.map(
+      (record) =>
+        new Date(
+          record.date
+        ).toLocaleDateString()
+    ),
+  
+    datasets: [
+      {
+        label: "Screen Time (Minutes)",
+        data: screenTimes.map(
+          (record) =>
+            record.durationMinutes
+        ),
+        borderColor: "rgb(59,130,246)",
+        backgroundColor:
+          "rgba(59,130,246,0.5)",
+      },
+    ],
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-8">
@@ -269,10 +313,10 @@ const ChildProfile = () => {
         </p>
       </div>
 
+      {/* Screen Form */}
       <form
         onSubmit={handleScreenTimeSubmit}
-        className="bg-white p-6 rounded shadow mt-8"
-      >
+        className="bg-white p-6 rounded shadow mt-8">
         <h2 className="text-2xl font-semibold mb-4">
           Add Screen Time
         </h2>
@@ -330,6 +374,7 @@ const ChildProfile = () => {
         </button>
       </form>
 
+      {/* Screen Time History */}
       <div className="bg-white p-6 rounded shadow mt-8">
         <h2 className="text-2xl font-semibold mb-4">
           Screen Time Records
@@ -364,6 +409,17 @@ const ChildProfile = () => {
         )}
       </div>
 
+      {/* Screen Time Trend Chart */}
+      <div className="bg-white p-6 rounded shadow mt-8">
+        <h2 className="text-2xl font-semibold mb-4">
+          Screen Time Trend
+        </h2>
+
+        <Line data={screenTimeChartData} />
+      </div>
+
+
+      {/* Sleep Form */}
       <form 
         onSubmit={handleSleepSubmit}
         className="bg-white p-6 rounded shadow mt-8"
