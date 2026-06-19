@@ -119,10 +119,36 @@ const Dashboard = () => {
         </button>
       </form>
 
-      <p>Total Children: {children.length}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="bg-blue-100 p-4 rounded shadow">
+          <h3 className="font-semibold">
+            Total Children
+          </h3>
 
-      <div className="bg-red-500 text-white p-4 mb-4">
-        TEST BLOCK
+          <p className="text-3xl font-bold">
+            {children.length}
+          </p>
+        </div>
+
+        <div className="bg-green-100 p-4 rounded shadow">
+          <h3 className="font-semibold">
+            Active Profiles
+          </h3>
+
+          <p className="text-3xl font-bold">
+            {children.length}
+          </p>
+        </div>
+
+        <div className="bg-purple-100 p-4 rounded shadow">
+          <h3 className="font-semibold">
+            BrightRoots
+          </h3>
+
+          <p className="text-lg font-bold">
+            Child Wellness Tracker
+          </p>
+        </div>
       </div>
 
       <div className="bg-white p-6 rounded shadow">
@@ -136,7 +162,7 @@ const Dashboard = () => {
           children.map((child) => (
             <div
               key={child._id}
-              className="border p-4 rounded mb-3"
+              className="border p-4 rounded mb-4 shadow-sm"
             >
               <p>
                 <strong>Name:</strong> {child.name}
