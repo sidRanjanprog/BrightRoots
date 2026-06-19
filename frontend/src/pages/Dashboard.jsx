@@ -4,9 +4,16 @@ import {
   getChildren,
   createChild,
 } from "../services/childService";
+import {
+  getDashboardInsights,
+} from "../services/dashboardService";
 
 const Dashboard = () => {
   const [children, setChildren] = useState([]);
+  const [
+    dashboardInsights,
+    setDashboardInsights,
+  ] = useState(null);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -34,6 +41,20 @@ const Dashboard = () => {
     }
   };
 
+  const fetchDashboardInsights =
+    async () => {
+      try {
+        const data =
+          await getDashboardInsights();
+
+        console.log(data);
+
+        setDashboardInsights(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -56,6 +77,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchChildren();
+    fetchDashboardInsights();
   }, []);
 
   console.log("Children State:", children);
@@ -119,37 +141,82 @@ const Dashboard = () => {
         </button>
       </form>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-blue-100 p-4 rounded shadow">
-          <h3 className="font-semibold">
-            Total Children
-          </h3>
+      {dashboardInsights && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 
-          <p className="text-3xl font-bold">
-            {children.length}
-          </p>
+          <div className="bg-blue-100 p-4 rounded shadow">
+            <h3 className="font-semibold">
+              Total Children
+            </h3>
+
+            <p className="text-3xl font-bold">
+              {dashboardInsights.totalChildren}
+            </p>
+          </div>
+
+          <div className="bg-green-100 p-4 rounded shadow">
+            <h3 className="font-semibold">
+              Avg Wellness
+            </h3>
+
+            <p className="text-3xl font-bold">
+              {
+                dashboardInsights.averageWellnessScore
+              }
+            </p>
+          </div>
+
+          <div className="bg-red-100 p-4 rounded shadow">
+            <h3 className="font-semibold">
+              Highest Risk Child
+            </h3>
+
+            <p className="text-xl font-bold">
+              {
+                dashboardInsights.highestRiskChild ||
+                "None"
+              }
+            </p>
+          </div>
+
+          <div className="bg-yellow-100 p-4 rounded shadow">
+            <h3 className="font-semibold">
+              Avg Screen Time
+            </h3>
+
+            <p className="text-2xl font-bold">
+              {
+                dashboardInsights.averageScreenTime
+              } mins
+            </p>
+          </div>
+
+          <div className="bg-purple-100 p-4 rounded shadow">
+            <h3 className="font-semibold">
+              Avg Sleep
+            </h3>
+
+            <p className="text-2xl font-bold">
+              {
+                dashboardInsights.averageSleep
+              } hrs
+            </p>
+          </div>
+
+          <div className="bg-orange-100 p-4 rounded shadow">
+            <h3 className="font-semibold">
+              Avg Outdoor Time
+            </h3>
+
+            <p className="text-2xl font-bold">
+              {
+                dashboardInsights.averageOutdoorTime
+              } mins
+            </p>
+          </div>
+
         </div>
-
-        <div className="bg-green-100 p-4 rounded shadow">
-          <h3 className="font-semibold">
-            Active Profiles
-          </h3>
-
-          <p className="text-3xl font-bold">
-            {children.length}
-          </p>
-        </div>
-
-        <div className="bg-purple-100 p-4 rounded shadow">
-          <h3 className="font-semibold">
-            BrightRoots
-          </h3>
-
-          <p className="text-lg font-bold">
-            Child Wellness Tracker
-          </p>
-        </div>
-      </div>
+      )}
 
       <div className="bg-white p-6 rounded shadow">
         <h2 className="text-2xl font-semibold mb-4">
