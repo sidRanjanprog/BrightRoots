@@ -21,7 +21,7 @@ const sleepSchema = new mongoose.Schema(
 
     sleepQuality: {
       type: String,
-      enum: ["Poor", "Average", "Good"],
+      enum: ["Poor", "Average", "Good", "Excellent"],
       default: "Average",
     },
   },

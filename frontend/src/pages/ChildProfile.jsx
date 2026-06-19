@@ -8,6 +8,11 @@ import {
   getScreenTimes,
 } from "../services/screenTimeService";
 
+import {
+  createSleep,
+  getSleepRecords,
+} from "../services/sleepService";
+
 const ChildProfile = () => {
   const { id } = useParams();
 
@@ -23,6 +28,16 @@ const ChildProfile = () => {
     activityType: "Educational",
   });
 
+  const [sleepRecords, setSleepRecords] =
+  useState([]);
+
+  const [sleepData, setSleepData] =
+  useState({
+    date: "",
+    sleepHours: "",
+    sleepQuality: "Good",
+  });
+
   const handleScreenTimeChange = (
     e
   ) => {
@@ -30,6 +45,41 @@ const ChildProfile = () => {
       ...screenTimeData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleSleepChange = (
+    e
+  ) => {
+    setSleepData({
+      ...sleepData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSleepSubmit = async (
+    e
+  ) => {
+    e.preventDefault();
+  
+    try {
+      const response =
+        await createSleep({
+          childId: child._id,
+          ...sleepData,
+        });
+  
+      console.log(response);
+
+      fetchSleepRecords();
+  
+      setSleepData({
+        date: "",
+        sleepHours: "",
+        sleepQuality: "Good",
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleScreenTimeSubmit = async (
@@ -82,9 +132,25 @@ const ChildProfile = () => {
     }
   };
 
+  const fetchSleepRecords = async () => {
+    try {
+      const data =
+        await getSleepRecords(id);
+  
+      console.log(data);
+  
+      setSleepRecords(
+        data.sleepRecords
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchChild();
     fetchScreenTimes();
+    fetchSleepRecords();
   }, [id]);
 
   if (!child) {
@@ -204,6 +270,97 @@ const ChildProfile = () => {
               <p>
                 <strong>Activity:</strong>{" "}
                 {record.activityType}
+              </p>
+            </div>
+          ))
+        )}
+      </div>
+
+      <form 
+        onSubmit={handleSleepSubmit}
+        className="bg-white p-6 rounded shadow mt-8"
+      >
+        <h2 className="text-2xl font-semibold mb-4">
+          Add Sleep Record
+        </h2>
+
+        <input
+          type="date"
+          name="date"
+          className="w-full border p-3 mb-4 rounded"
+          value={sleepData.date}
+          onChange={handleSleepChange}
+          max={new Date().toISOString().split("T")[0]}
+        />
+
+        <input
+          type="number"
+          name="sleepHours"
+          placeholder="Sleep Hours"
+          className="w-full border p-3 mb-4 rounded"
+          value={sleepData.sleepHours}
+          onChange={handleSleepChange}
+        />
+
+        <select
+          name="sleepQuality"
+          className="w-full border p-3 mb-4 rounded"
+          value={sleepData.sleepQuality}
+          onChange={handleSleepChange}
+        >
+          <option value="Excellent">
+            Excellent
+          </option>
+
+          <option value="Good">
+            Good
+          </option>
+
+          <option value="Average">
+            Average
+          </option>
+
+          <option value="Poor">
+            Poor
+          </option>
+        </select>
+
+        <button
+          type="submit"
+          className="bg-purple-600 text-white px-6 py-3 rounded"
+        >
+          Save Sleep Record
+        </button>
+      </form>
+
+      <div className="bg-white p-6 rounded shadow mt-8">
+        <h2 className="text-2xl font-semibold mb-4">
+          Sleep History
+        </h2>
+
+        {sleepRecords.length === 0 ? (
+          <p>No sleep records yet.</p>
+        ) : (
+          sleepRecords.map((record) => (
+            <div
+              key={record._id}
+              className="border p-4 rounded mb-3"
+            >
+              <p>
+                <strong>Date:</strong>{" "}
+                {new Date(
+                  record.date
+                ).toLocaleDateString()}
+              </p>
+
+              <p>
+                <strong>Sleep Hours:</strong>{" "}
+                {record.sleepHours}
+              </p>
+
+              <p>
+                <strong>Quality:</strong>{" "}
+                {record.sleepQuality}
               </p>
             </div>
           ))
