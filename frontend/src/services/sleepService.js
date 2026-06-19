@@ -34,3 +34,22 @@ export const getSleepRecords = async (
 
   return response.data;
 };
+
+export const deleteSleep =
+  async (id) => {
+    const token =
+      localStorage.getItem("token");
+
+    const response =
+      await api.delete(
+        `/sleep/${id}`,
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`,
+          },
+        }
+      );
+
+    return response.data;
+  };

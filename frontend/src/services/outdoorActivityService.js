@@ -16,7 +16,7 @@ export const createOutdoorActivity = async (
   );
 
   return response.data;
-};
+  };
 
 export const getOutdoorActivities = async (
   childId
@@ -33,4 +33,23 @@ export const getOutdoorActivities = async (
   );
 
   return response.data;
-};
+  };
+
+export const deleteOutdoorActivity =
+  async (id) => {
+    const token =
+      localStorage.getItem("token");
+
+    const response =
+      await api.delete(
+        `/outdoor-activities/${id}`,
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`,
+          },
+        }
+      );
+
+    return response.data;
+  };

@@ -34,3 +34,42 @@ export const getScreenTimes = async (
 
   return response.data;
 };
+
+export const deleteScreenTime =
+  async (id) => {
+    const token =
+      localStorage.getItem("token");
+
+    const response =
+      await api.delete(
+        `/screen-time/${id}`,
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`,
+          },
+        }
+      );
+
+    return response.data;
+  };
+
+  export const updateScreenTime =
+  async (id, screenTimeData) => {
+    const token =
+      localStorage.getItem("token");
+
+    const response =
+      await api.put(
+        `/screen-time/${id}`,
+        screenTimeData,
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`,
+          },
+        }
+      );
+
+    return response.data;
+  };

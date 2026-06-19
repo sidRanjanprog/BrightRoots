@@ -18,16 +18,20 @@ import { getChildById } from "../services/childService";
 import {
   createScreenTime,
   getScreenTimes,
+  deleteScreenTime,
+  updateScreenTime,
 } from "../services/screenTimeService";
 
 import {
   createSleep,
   getSleepRecords,
+  deleteSleep,
 } from "../services/sleepService";
 
 import {
   createOutdoorActivity,
   getOutdoorActivities,
+  deleteOutdoorActivity,
 } from "../services/outdoorActivityService";
 
 import {
@@ -51,6 +55,11 @@ const ChildProfile = () => {
 
   const [screenTimes, setScreenTimes] =
   useState([]);
+
+  const [
+    editingScreenTimeId,
+    setEditingScreenTimeId,
+  ] = useState(null);
 
   const [screenTimeData, setScreenTimeData] =
   useState({
@@ -92,6 +101,17 @@ const ChildProfile = () => {
     });
   };
 
+  const handleDeleteScreenTime =
+    async (id) => {
+    try {
+      await deleteScreenTime(id);
+
+      await fetchScreenTimes();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleSleepChange = (
     e
   ) => {
@@ -101,6 +121,17 @@ const ChildProfile = () => {
     });
   };
 
+  const handleDeleteSleep =
+    async (id) => {
+      try {
+        await deleteSleep(id);
+
+        await fetchSleepRecords();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
   const handleOutdoorChange = (
     e
   ) => {
@@ -108,6 +139,19 @@ const ChildProfile = () => {
       ...outdoorData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleDeleteOutdoorActivity =
+  async (id) => {
+    try {
+      await deleteOutdoorActivity(
+        id
+      );
+
+      await fetchOutdoorActivities();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSleepSubmit = async (
@@ -137,51 +181,66 @@ const ChildProfile = () => {
   };
 
   const handleOutdoorSubmit = async (
-  e
-) => {
-  e.preventDefault();
+    e
+  ) => {
+    e.preventDefault();
 
-  try {
-    const response =
-      await createOutdoorActivity({
-        childId: child._id,
-        ...outdoorData,
+    try {
+      const response =
+        await createOutdoorActivity({
+          childId: child._id,
+          ...outdoorData,
+        });
+
+      console.log(response);
+
+      await fetchOutdoorActivities();
+
+      setOutdoorData({
+        date: "",
+        activityType: "",
+        durationMinutes: "",
       });
-
-    console.log(response);
-
-    await fetchOutdoorActivities();
-
-    setOutdoorData({
-      date: "",
-      activityType: "",
-      durationMinutes: "",
-    });
-  } catch (error) {
-    console.error(error);
-  }
-};
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleScreenTimeSubmit = async (
     e
   ) => {
     e.preventDefault();
-  
+
     try {
-      const response =
-        await createScreenTime({
-          childId: child._id,
-          ...screenTimeData,
-        });
-  
+      let response;
+
+      if (editingScreenTimeId) {
+        response =
+          await updateScreenTime(
+            editingScreenTimeId,
+            screenTimeData
+          );
+
+        setEditingScreenTimeId(
+          null
+        );
+      } else {
+        response =
+          await createScreenTime({
+            childId: child._id,
+            ...screenTimeData,
+          });
+      }
+
       console.log(response);
 
       await fetchScreenTimes();
-  
+
       setScreenTimeData({
         date: "",
         durationMinutes: "",
-        activityType: "Educational",
+        activityType:
+          "Educational",
       });
     } catch (error) {
       console.error(error);
@@ -419,7 +478,9 @@ const ChildProfile = () => {
           type="submit"
           className="bg-blue-600 text-white px-6 py-3 rounded"
         >
-          Save Screen Time
+          {editingScreenTimeId
+            ? "Update Screen Time"
+            : "Save Screen Time"}
         </button>
       </form>
 
@@ -453,6 +514,40 @@ const ChildProfile = () => {
                 <strong>Activity:</strong>{" "}
                 {record.activityType}
               </p>
+
+              <button
+                onClick={() =>
+                  handleDeleteScreenTime(
+                    record._id
+                  )
+                }
+                className="mt-2 mr-2 bg-red-600 text-white px-3 py-2 rounded"
+              >
+                Delete
+              </button>
+
+              <button
+                onClick={() => {
+                  setEditingScreenTimeId(
+                    record._id
+                  );
+
+                  setScreenTimeData({
+                    date:
+                      record.date
+                        .split("T")[0],
+
+                    durationMinutes:
+                      record.durationMinutes,
+
+                    activityType:
+                      record.activityType,
+                  });
+                }}
+                className="mt-2 bg-yellow-500 text-white px-3 py-2 rounded"
+              >
+                Edit
+              </button>
             </div>
           ))
         )}
@@ -556,6 +651,17 @@ const ChildProfile = () => {
                 <strong>Quality:</strong>{" "}
                 {record.sleepQuality}
               </p>
+
+              <button
+                onClick={() =>
+                  handleDeleteSleep(
+                    record._id
+                  )
+                }
+                className="mt-2 bg-red-600 text-white px-3 py-2 rounded"
+              >
+                Delete
+              </button>
             </div>
           ))
         )}
@@ -646,6 +752,17 @@ const ChildProfile = () => {
                 <strong>Duration:</strong>{" "}
                 {activity.durationMinutes} mins
               </p>
+
+              <button
+                onClick={() =>
+                  handleDeleteOutdoorActivity(
+                    activity._id
+                  )
+                }
+                className="mt-2 bg-red-600 text-white px-3 py-2 rounded"
+              >
+                Delete
+              </button>
             </div>
           ))
         )}
