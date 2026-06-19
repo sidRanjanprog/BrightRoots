@@ -18,6 +18,10 @@ import {
   getOutdoorActivities,
 } from "../services/outdoorActivityService";
 
+import {
+  getRecommendations,
+} from "../services/recommendationService";
+
 const ChildProfile = () => {
   const { id } = useParams();
 
@@ -52,6 +56,10 @@ const ChildProfile = () => {
     activityType: "",
     durationMinutes: "",
   });
+
+  const [recommendationData,
+    setRecommendationData] =
+    useState(null);
 
   const handleScreenTimeChange = (
     e
@@ -207,6 +215,20 @@ const ChildProfile = () => {
       setOutdoorActivities(
         data.activities
       );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchRecommendations =
+  async () => {
+    try {
+      const data =
+        await getRecommendations(id);
+
+      console.log(data);
+
+      setRecommendationData(data);
     } catch (error) {
       console.error(error);
     }
@@ -507,6 +529,106 @@ const ChildProfile = () => {
               </p>
             </div>
           ))
+        )}
+      </div>
+
+      <div className="bg-white p-6 rounded shadow mt-8">
+        <h2 className="text-2xl font-semibold mb-4">
+          Recommendations
+        </h2>
+
+        <button
+          onClick={fetchRecommendations}
+          className="bg-green-600 text-white px-6 py-3 rounded mb-6"
+        >
+          Generate Recommendations
+        </button>
+
+        {recommendationData && (
+          <>
+            <div className="mb-4">
+              <p>
+                <strong>Wellness Score:</strong>{" "}
+                {recommendationData.wellnessScore}
+              </p>
+
+              <p>
+                <strong>Risk Level:</strong>{" "}
+                {recommendationData.riskLevel}
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="font-semibold">
+                Metrics
+              </h3>
+
+              <p>
+                Average Screen Time:{" "}
+                {
+                  recommendationData.metrics
+                    .avgScreenTime
+                }
+                mins
+              </p>
+
+              <p>
+                Average Sleep:{" "}
+                {
+                  recommendationData.metrics
+                    .avgSleep
+                }
+                hrs
+              </p>
+
+              <p>
+                Average Outdoor Time:{" "}
+                {
+                  recommendationData.metrics
+                    .avgOutdoorTime
+                }
+                mins
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="font-semibold">
+                Recommendations
+              </h3>
+
+              <ul className="list-disc pl-6">
+                {recommendationData.recommendations.map(
+                  (
+                    recommendation,
+                    index
+                  ) => (
+                    <li key={index}>
+                      {recommendation}
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+
+            {recommendationData.dataWarnings
+              .length > 0 && (
+              <div>
+                <h3 className="font-semibold">
+                  Data Warnings
+                </h3>
+
+                <ul className="list-disc pl-6">
+                  {recommendationData.dataWarnings.map(
+                    (warning, index) => (
+                      <li key={index}>
+                        {warning}
+                      </li>
+                    )
+                  )}
+                </ul>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
