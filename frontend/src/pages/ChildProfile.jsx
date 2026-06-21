@@ -100,6 +100,13 @@ const ChildProfile = () => {
   };
 
   const handleDeleteScreenTime = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this record?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
     try {
       await deleteScreenTime(id);
 
@@ -123,6 +130,13 @@ const ChildProfile = () => {
   };
 
   const handleDeleteSleep = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this record?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
     try {
       await deleteSleep(id);
 
@@ -145,6 +159,13 @@ const ChildProfile = () => {
   };
 
   const handleDeleteOutdoorActivity = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this record?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
     try {
       await deleteOutdoorActivity(id);
 
