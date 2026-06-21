@@ -33,6 +33,7 @@ import {
   createOutdoorActivity,
   getOutdoorActivities,
   deleteOutdoorActivity,
+  updateOutdoorActivity,
 } from "../services/outdoorActivityService";
 
 import { getRecommendations } from "../services/recommendationService";
@@ -79,6 +80,8 @@ const ChildProfile = () => {
     activityType: "",
     durationMinutes: "",
   });
+
+  const [editingOutdoorId, setEditingOutdoorId] = useState(null);
 
   const [recommendationData, setRecommendationData] = useState(null);
 
@@ -168,10 +171,18 @@ const ChildProfile = () => {
     e.preventDefault();
 
     try {
-      const response = await createOutdoorActivity({
-        childId: child._id,
-        ...outdoorData,
-      });
+      let response;
+
+      if (editingOutdoorId) {
+        response = await updateOutdoorActivity(editingOutdoorId, outdoorData);
+
+        setEditingOutdoorId(null);
+      } else {
+        response = await createOutdoorActivity({
+          childId: child._id,
+          ...outdoorData,
+        });
+      }
 
       console.log(response);
 
@@ -607,9 +618,11 @@ const ChildProfile = () => {
 
         <button
           type="submit"
-          className="bg-orange-600 text-white px-6 py-3 rounded"
+          className="bg-green-600 text-white px-6 py-3 rounded"
         >
-          Save Outdoor Activity
+          {editingOutdoorId
+            ? "Update Outdoor Activity"
+            : "Save Outdoor Activity"}
         </button>
       </form>
 
@@ -637,12 +650,31 @@ const ChildProfile = () => {
                 <strong>Duration:</strong> {activity.durationMinutes} mins
               </p>
 
-              <button
-                onClick={() => handleDeleteOutdoorActivity(activity._id)}
-                className="mt-2 bg-red-600 text-white px-3 py-2 rounded"
-              >
-                Delete
-              </button>
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={() => handleDeleteOutdoorActivity(activity._id)}
+                  className="bg-red-600 text-white px-3 py-2 rounded"
+                >
+                  Delete
+                </button>
+
+                <button
+                  onClick={() => {
+                    setEditingOutdoorId(activity._id);
+
+                    setOutdoorData({
+                      date: activity.date.split("T")[0],
+
+                      activityType: activity.activityType,
+
+                      durationMinutes: activity.durationMinutes,
+                    });
+                  }}
+                  className="bg-yellow-500 text-white px-3 py-2 rounded"
+                >
+                  Edit
+                </button>
+              </div>
             </div>
           ))
         )}
