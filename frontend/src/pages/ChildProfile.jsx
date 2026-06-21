@@ -86,6 +86,12 @@ const ChildProfile = () => {
 
   const [recommendationData, setRecommendationData] = useState(null);
 
+  const [screenTimeLoading, setScreenTimeLoading] = useState(false);
+
+  const [sleepLoading, setSleepLoading] = useState(false);
+
+  const [outdoorLoading, setOutdoorLoading] = useState(false);
+
   const handleScreenTimeChange = (e) => {
     setScreenTimeData({
       ...screenTimeData,
@@ -180,6 +186,7 @@ const ChildProfile = () => {
     }
 
     try {
+      setSleepLoading(true);
       let response;
 
       if (editingSleepId) {
@@ -216,6 +223,8 @@ const ChildProfile = () => {
       toast.error(
         error.response?.data?.message || "Failed to save sleep record",
       );
+    } finally {
+      setSleepLoading(false);
     }
   };
 
@@ -245,6 +254,7 @@ const ChildProfile = () => {
     }
 
     try {
+      setOutdoorLoading(true);
       let response;
 
       const isEditing = Boolean(editingOutdoorId);
@@ -281,6 +291,8 @@ const ChildProfile = () => {
       toast.error(
         error.response?.data?.message || "Failed to save outdoor activity",
       );
+    } finally {
+      setOutdoorLoading(false);
     }
   };
 
@@ -305,6 +317,7 @@ const ChildProfile = () => {
     }
 
     try {
+      setScreenTimeLoading(true);
       let response;
 
       const isEditing = Boolean(editingScreenTimeId);
@@ -341,6 +354,8 @@ const ChildProfile = () => {
       toast.error(
         error.response?.data?.message || "Failed to save screen time",
       );
+    } finally {
+      setScreenTimeLoading(false);
     }
   };
 
@@ -529,9 +544,14 @@ const ChildProfile = () => {
 
         <button
           type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded"
+          disabled={screenTimeLoading}
+          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50"
         >
-          {editingScreenTimeId ? "Update Screen Time" : "Save Screen Time"}
+          {screenTimeLoading
+            ? "Saving..."
+            : editingScreenTimeId
+              ? "Update Screen Time"
+              : "Save Screen Time"}
         </button>
       </form>
 
@@ -634,9 +654,14 @@ const ChildProfile = () => {
 
         <button
           type="submit"
-          className="bg-purple-600 text-white px-6 py-3 rounded"
+          disabled={sleepLoading}
+          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50"
         >
-          {editingSleepId ? "Update Sleep" : "Save Sleep"}
+          {sleepLoading
+            ? "Saving..."
+            : editingSleepId
+              ? "Update Sleep Record"
+              : "Save Sleep Record"}
         </button>
       </form>
 
@@ -733,11 +758,14 @@ const ChildProfile = () => {
 
         <button
           type="submit"
-          className="bg-green-600 text-white px-6 py-3 rounded"
+          disabled={outdoorLoading}
+          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50"
         >
-          {editingOutdoorId
-            ? "Update Outdoor Activity"
-            : "Save Outdoor Activity"}
+          {outdoorLoading
+            ? "Saving..."
+            : editingOutdoorId
+              ? "Update Outdoor Activity"
+              : "Save Outdoor Activity"}
         </button>
       </form>
 
