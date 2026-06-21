@@ -52,17 +52,17 @@ const Dashboard = () => {
 
     try {
       if (!formData.name.trim()) {
-        alert("Child name is required");
+        toast.error("Child name is required");
         return;
       }
 
       if (Number(formData.age) < 1 || Number(formData.age) > 18) {
-        alert("Age must be between 1 and 18");
+        toast.error("Age must be between 1 and 18");
         return;
       }
 
       if (!formData.gender) {
-        alert("Please select a gender");
+        toast.error("Please select a gender");
         return;
       }
       const response = await createChild(formData);
