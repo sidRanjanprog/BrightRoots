@@ -139,6 +139,28 @@ const ChildProfile = () => {
   const handleSleepSubmit = async (e) => {
     e.preventDefault();
 
+    if (Number(sleepData.sleepHours) <= 0) {
+      alert("Sleep hours must be greater than 0");
+      return;
+    }
+
+    if (Number(sleepData.sleepHours) > 24) {
+      alert("Sleep hours cannot exceed 24");
+      return;
+    }
+
+    if (!sleepData.date) {
+      alert("Please select a date");
+      return;
+    }
+
+    const selectedDate = new Date(sleepData.date);
+
+    if (selectedDate > new Date()) {
+      alert("Future dates are not allowed");
+      return;
+    }
+
     try {
       let response;
 
@@ -170,6 +192,28 @@ const ChildProfile = () => {
   const handleOutdoorSubmit = async (e) => {
     e.preventDefault();
 
+    if (Number(outdoorData.durationMinutes) <= 0) {
+      alert("Duration must be greater than 0");
+      return;
+    }
+
+    if (!outdoorData.activityType.trim()) {
+      alert("Activity type is required");
+      return;
+    }
+
+    if (!outdoorData.date) {
+      alert("Please select a date");
+      return;
+    }
+
+    const selectedDate = new Date(outdoorData.date);
+
+    if (selectedDate > new Date()) {
+      alert("Future dates are not allowed");
+      return;
+    }
+
     try {
       let response;
 
@@ -200,6 +244,23 @@ const ChildProfile = () => {
 
   const handleScreenTimeSubmit = async (e) => {
     e.preventDefault();
+
+    if (Number(screenTimeData.durationMinutes) <= 0) {
+      alert("Screen time must be greater than 0");
+      return;
+    }
+
+    if (!screenTimeData.date) {
+      alert("Please select a date");
+      return;
+    }
+
+    const selectedDate = new Date(screenTimeData.date);
+
+    if (selectedDate > new Date()) {
+      alert("Future dates are not allowed");
+      return;
+    }
 
     try {
       let response;

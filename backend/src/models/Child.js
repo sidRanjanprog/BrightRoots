@@ -12,12 +12,15 @@ const childSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      minlength: 2,
+      maxlength: 50,
     },
 
     age: {
       type: Number,
       required: true,
-      min: 0,
+      min: 1,
+      max: 18,
     },
 
     gender: {
@@ -28,7 +31,7 @@ const childSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 module.exports = mongoose.model("Child", childSchema);

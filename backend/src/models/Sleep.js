@@ -16,7 +16,8 @@ const sleepSchema = new mongoose.Schema(
     sleepHours: {
       type: Number,
       required: true,
-      min: 0,
+      min: 1,
+      max: 24,
     },
 
     sleepQuality: {
@@ -27,10 +28,7 @@ const sleepSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-module.exports = mongoose.model(
-  "Sleep",
-  sleepSchema
-);
+module.exports = mongoose.model("Sleep", sleepSchema);

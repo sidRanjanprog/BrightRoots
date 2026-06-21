@@ -16,27 +16,19 @@ const screenTimeSchema = new mongoose.Schema(
     durationMinutes: {
       type: Number,
       required: true,
-      min: 0,
+      min: 1,
+      max: 1440,
     },
 
     activityType: {
       type: String,
-      enum: [
-        "Educational",
-        "Entertainment",
-        "Gaming",
-        "Social Media",
-        "Other",
-      ],
+      enum: ["Educational", "Entertainment", "Gaming", "Social Media", "Other"],
       default: "Other",
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-module.exports = mongoose.model(
-  "ScreenTime",
-  screenTimeSchema
-);
+module.exports = mongoose.model("ScreenTime", screenTimeSchema);
