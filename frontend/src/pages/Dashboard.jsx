@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getChildren, createChild } from "../services/childService";
 
 import { getDashboardInsights } from "../services/recommendationService";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const [children, setChildren] = useState([]);
@@ -65,6 +66,7 @@ const Dashboard = () => {
         return;
       }
       const response = await createChild(formData);
+      toast.success("Child added successfully!");
 
       console.log(response);
 
@@ -77,6 +79,8 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error(error);
+
+      toast.error(error.response?.data?.message || "Failed to add child");
     }
   };
 

@@ -37,6 +37,7 @@ import {
 } from "../services/outdoorActivityService";
 
 import { getRecommendations } from "../services/recommendationService";
+import { toast } from "react-toastify";
 
 ChartJS.register(
   CategoryScale,
@@ -96,9 +97,15 @@ const ChildProfile = () => {
     try {
       await deleteScreenTime(id);
 
+      toast.success("Screen time deleted successfully!");
+
       await fetchScreenTimes();
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        error.response?.data?.message || "Failed to delete screen time",
+      );
     }
   };
 
@@ -113,9 +120,14 @@ const ChildProfile = () => {
     try {
       await deleteSleep(id);
 
+      toast.success("Sleep record deleted successfully!");
+
       await fetchSleepRecords();
     } catch (error) {
       console.error(error);
+      toast.error(
+        error.response?.data?.message || "Failed to delete sleep record",
+      );
     }
   };
 
@@ -130,9 +142,15 @@ const ChildProfile = () => {
     try {
       await deleteOutdoorActivity(id);
 
+      toast.success("Outdoor activity deleted successfully!");
+
       await fetchOutdoorActivities();
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        error.response?.data?.message || "Failed to delete outdoor activity",
+      );
     }
   };
 
@@ -175,6 +193,14 @@ const ChildProfile = () => {
         });
       }
 
+      const isEditing = Boolean(editingSleepId);
+
+      toast.success(
+        isEditing
+          ? "Sleep record updated successfully!"
+          : "Sleep record saved successfully!",
+      );
+
       console.log(response);
 
       await fetchSleepRecords();
@@ -186,6 +212,10 @@ const ChildProfile = () => {
       });
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        error.response?.data?.message || "Failed to save sleep record",
+      );
     }
   };
 
@@ -217,6 +247,8 @@ const ChildProfile = () => {
     try {
       let response;
 
+      const isEditing = Boolean(editingOutdoorId);
+
       if (editingOutdoorId) {
         response = await updateOutdoorActivity(editingOutdoorId, outdoorData);
 
@@ -227,6 +259,12 @@ const ChildProfile = () => {
           ...outdoorData,
         });
       }
+
+      toast.success(
+        isEditing
+          ? "Outdoor activity updated successfully!"
+          : "Outdoor activity saved successfully!",
+      );
 
       console.log(response);
 
@@ -239,6 +277,10 @@ const ChildProfile = () => {
       });
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        error.response?.data?.message || "Failed to save outdoor activity",
+      );
     }
   };
 
@@ -265,6 +307,8 @@ const ChildProfile = () => {
     try {
       let response;
 
+      const isEditing = Boolean(editingScreenTimeId);
+
       if (editingScreenTimeId) {
         response = await updateScreenTime(editingScreenTimeId, screenTimeData);
 
@@ -275,6 +319,12 @@ const ChildProfile = () => {
           ...screenTimeData,
         });
       }
+
+      toast.success(
+        isEditing
+          ? "Screen time updated successfully!"
+          : "Screen time saved successfully!",
+      );
 
       console.log(response);
 
@@ -287,6 +337,10 @@ const ChildProfile = () => {
       });
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        error.response?.data?.message || "Failed to save screen time",
+      );
     }
   };
 
