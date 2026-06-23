@@ -21,15 +21,9 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await api.post(
-        "/auth/login",
-        formData
-      );
+      const response = await api.post("/auth/login", formData);
 
-      localStorage.setItem(
-        "token",
-        response.data.token
-      );
+      localStorage.setItem("token", response.data.token);
 
       alert("Login Successful!");
 
@@ -47,9 +41,7 @@ const Login = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-md p-6 border rounded-lg shadow"
       >
-        <h1 className="text-3xl font-bold mb-6">
-          Login
-        </h1>
+        <h1 className="text-3xl font-bold mb-6">Login</h1>
 
         <input
           type="email"
@@ -69,7 +61,7 @@ const Login = () => {
 
         <button
           type="submit"
-          className="w-full bg-green-600 text-white p-3 rounded"
+          className="w-full bg-green-600 text-white p-3 rounded cursor-pointer"
         >
           Login
         </button>

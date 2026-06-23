@@ -19,10 +19,7 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const response = await api.post(
-        "/auth/register",
-        formData
-      );
+      const response = await api.post("/auth/register", formData);
 
       console.log(response.data);
 
@@ -40,9 +37,7 @@ const Register = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-md p-6 border rounded-lg shadow"
       >
-        <h1 className="text-3xl font-bold mb-6">
-          Register
-        </h1>
+        <h1 className="text-3xl font-bold mb-6">Register</h1>
 
         <input
           type="text"
@@ -70,7 +65,7 @@ const Register = () => {
 
         <button
           type="submit"
-          className="w-full bg-green-600 text-white p-3 rounded"
+          className="w-full bg-green-600 text-white p-3 rounded cursor-pointer"
         >
           Register
         </button>

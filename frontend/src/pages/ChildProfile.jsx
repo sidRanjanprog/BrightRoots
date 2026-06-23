@@ -10,7 +10,7 @@ import {
 } from "chart.js";
 
 import { Line } from "react-chartjs-2";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 import { getChildById } from "../services/childService";
@@ -64,6 +64,8 @@ const ChildProfile = () => {
     activityType: "Educational",
   });
 
+  const screenTimeFormRef = useRef(null);
+
   const [sleepRecords, setSleepRecords] = useState([]);
 
   const [sleepData, setSleepData] = useState({
@@ -71,6 +73,8 @@ const ChildProfile = () => {
     sleepHours: "",
     sleepQuality: "Good",
   });
+
+  const sleepFormRef = useRef(null);
 
   const [editingSleepId, setEditingSleepId] = useState(null);
 
@@ -81,6 +85,8 @@ const ChildProfile = () => {
     activityType: "",
     durationMinutes: "",
   });
+
+  const outdoorFormRef = useRef(null);
 
   const [editingOutdoorId, setEditingOutdoorId] = useState(null);
 
@@ -455,49 +461,60 @@ const ChildProfile = () => {
     );
   }
 
+  const sortedScreenTimes = [...screenTimes].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
+  
   const screenTimeChartData = {
-    labels: screenTimes.map((record) =>
-      new Date(record.date).toLocaleDateString(),
+    labels: sortedScreenTimes.map((record) =>
+      new Date(record.date).toLocaleDateString()
     ),
-
+  
     datasets: [
       {
         label: "Screen Time (Minutes)",
-        data: screenTimes.map((record) => record.durationMinutes),
+        data: sortedScreenTimes.map(
+          (record) => record.durationMinutes
+        ),
         borderColor: "rgb(59,130,246)",
         backgroundColor: "rgba(59,130,246,0.5)",
       },
     ],
   };
 
+  const sortedSleepRecords = [...sleepRecords].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
+
   const sleepChartData = {
-    labels: sleepRecords.map((record) =>
+    labels: sortedSleepRecords.map((record) =>
       new Date(record.date).toLocaleDateString(),
     ),
 
     datasets: [
       {
         label: "Sleep Hours",
-        data: sleepRecords.map((record) => record.sleepHours),
+        data: sortedSleepRecords.map((record) => record.sleepHours),
         borderColor: "rgb(34,197,94)",
         backgroundColor: "rgba(34,197,94,0.5)",
       },
     ],
   };
 
+  const sortedOutdoorActivities = [...outdoorActivities].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
+
   const outdoorActivityChartData = {
-    labels: outdoorActivities.map((activity) =>
+    labels: sortedOutdoorActivities.map((activity) =>
       new Date(activity.date).toLocaleDateString(),
     ),
 
     datasets: [
       {
         label: "Outdoor Activity (Minutes)",
-
-        data: outdoorActivities.map((activity) => activity.durationMinutes),
-
+        data: sortedOutdoorActivities.map((activity) => activity.durationMinutes),
         borderColor: "rgb(249,115,22)",
-
         backgroundColor: "rgba(249,115,22,0.5)",
       },
     ],
@@ -523,6 +540,7 @@ const ChildProfile = () => {
 
       {/* Screen Form */}
       <form
+        ref={screenTimeFormRef}
         onSubmit={handleScreenTimeSubmit}
         className="bg-white p-6 rounded shadow mt-8"
       >
@@ -566,7 +584,7 @@ const ChildProfile = () => {
         <button
           type="submit"
           disabled={screenTimeLoading}
-          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50"
+          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50 cursor-pointer"
         >
           {screenTimeLoading
             ? "Saving..."
@@ -600,7 +618,7 @@ const ChildProfile = () => {
 
               <button
                 onClick={() => handleDeleteScreenTime(record._id)}
-                className="mt-2 mr-2 bg-red-600 text-white px-3 py-2 rounded"
+                className="mt-2 mr-2 bg-red-600 text-white px-3 py-2 rounded cursor-pointer"
               >
                 Delete
               </button>
@@ -616,8 +634,13 @@ const ChildProfile = () => {
 
                     activityType: record.activityType,
                   });
+
+                  screenTimeFormRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
                 }}
-                className="mt-2 bg-yellow-500 text-white px-3 py-2 rounded"
+                className="mt-2 bg-yellow-500 text-white px-3 py-2 rounded cursor-pointer"
               >
                 Edit
               </button>
@@ -635,6 +658,7 @@ const ChildProfile = () => {
 
       {/* Sleep Form */}
       <form
+        ref={sleepFormRef}
         onSubmit={handleSleepSubmit}
         className="bg-white p-6 rounded shadow mt-8"
       >
@@ -676,7 +700,7 @@ const ChildProfile = () => {
         <button
           type="submit"
           disabled={sleepLoading}
-          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50"
+          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50 cursor-pointer"
         >
           {sleepLoading
             ? "Saving..."
@@ -710,7 +734,7 @@ const ChildProfile = () => {
 
               <button
                 onClick={() => handleDeleteSleep(record._id)}
-                className="mt-2 mr-2 bg-red-600 text-white px-3 py-2 rounded"
+                className="mt-2 mr-2 bg-red-600 text-white px-3 py-2 rounded cursor-pointer"
               >
                 Delete
               </button>
@@ -726,8 +750,13 @@ const ChildProfile = () => {
 
                     sleepQuality: record.sleepQuality,
                   });
+
+                  sleepFormRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
                 }}
-                className="mt-2 bg-yellow-500 text-white px-3 py-2 rounded"
+                className="mt-2 bg-yellow-500 text-white px-3 py-2 rounded cursor-pointer"
               >
                 Edit
               </button>
@@ -745,6 +774,7 @@ const ChildProfile = () => {
 
       {/* Outdoor Activity Form */}
       <form
+        ref={outdoorFormRef}
         onSubmit={handleOutdoorSubmit}
         className="bg-white p-6 rounded shadow mt-8"
       >
@@ -780,7 +810,7 @@ const ChildProfile = () => {
         <button
           type="submit"
           disabled={outdoorLoading}
-          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50"
+          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50 cursor-pointer"
         >
           {outdoorLoading
             ? "Saving..."
@@ -817,7 +847,7 @@ const ChildProfile = () => {
               <div className="flex gap-2 mt-2">
                 <button
                   onClick={() => handleDeleteOutdoorActivity(activity._id)}
-                  className="bg-red-600 text-white px-3 py-2 rounded"
+                  className="bg-red-600 text-white px-3 py-2 rounded cursor-pointer"
                 >
                   Delete
                 </button>
@@ -833,8 +863,13 @@ const ChildProfile = () => {
 
                       durationMinutes: activity.durationMinutes,
                     });
+
+                    outdoorFormRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
                   }}
-                  className="bg-yellow-500 text-white px-3 py-2 rounded"
+                  className="bg-yellow-500 text-white px-3 py-2 rounded cursor-pointer"
                 >
                   Edit
                 </button>
@@ -856,7 +891,7 @@ const ChildProfile = () => {
 
         <button
           onClick={fetchRecommendations}
-          className="bg-green-600 text-white px-6 py-3 rounded mb-6"
+          className="bg-green-600 text-white px-6 py-3 rounded mb-6 cursor-pointer"
         >
           Generate Recommendations
         </button>
@@ -878,19 +913,16 @@ const ChildProfile = () => {
               <h3 className="font-semibold">Metrics</h3>
 
               <p>
-                Average Screen Time: {recommendationData.metrics.avgScreenTime}
-                mins
+                Average Screen Time: {recommendationData.metrics.avgScreenTime?.toFixed(2)} mins
               </p>
 
               <p>
-                Average Sleep: {recommendationData.metrics.avgSleep}
-                hrs
+                Average Sleep: {recommendationData.metrics.avgSleep?.toFixed(2)} hrs
               </p>
 
               <p>
                 Average Outdoor Time:{" "}
-                {recommendationData.metrics.avgOutdoorTime}
-                mins
+                {recommendationData.metrics.avgOutdoorTime?.toFixed(2)} mins
               </p>
             </div>
 

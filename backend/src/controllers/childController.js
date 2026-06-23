@@ -27,121 +27,121 @@ const createChild = async (req, res) => {
 };
 
 const getMyChildren = async (req, res) => {
-    try {
-      const children = await Child.find({
-        parent: req.user.userId,
-      });
-  
-      res.status(200).json({
-        success: true,
-        count: children.length,
-        children,
-      });
-    } catch (error) {
-      console.error(error);
-  
-      res.status(500).json({
-        success: false,
-        message: "Server Error",
-      });
-    }
-  };
+  try {
+    const children = await Child.find({
+      parent: req.user.userId,
+    });
 
-  const updateChild = async (req, res) => {
-    try {
-      const child = await Child.findOne({
-        _id: req.params.id,
-        parent: req.user.userId,
-      });
-  
-      if (!child) {
-        return res.status(404).json({
-          success: false,
-          message: "Child not found",
-        });
-      }
-  
-      child.name = req.body.name || child.name;
-      child.age = req.body.age || child.age;
-      child.gender = req.body.gender || child.gender;
-  
-      await child.save();
-  
-      res.status(200).json({
-        success: true,
-        message: "Child updated successfully",
-        child,
-      });
-    } catch (error) {
-      console.error(error);
-  
-      res.status(500).json({
-        success: false,
-        message: "Server Error",
-      });
-    }
-  };
+    res.status(200).json({
+      success: true,
+      count: children.length,
+      children,
+    });
+  } catch (error) {
+    console.error(error);
 
-  const deleteChild = async (req, res) => {
-    try {
-      const child = await Child.findOne({
-        _id: req.params.id,
-        parent: req.user.userId,
-      });
-  
-      if (!child) {
-        return res.status(404).json({
-          success: false,
-          message: "Child not found",
-        });
-      }
-  
-      await Child.deleteOne({
-        _id: req.params.id,
-      });
-  
-      res.status(200).json({
-        success: true,
-        message: "Child deleted successfully",
-      });
-    } catch (error) {
-      console.error(error);
-  
-      res.status(500).json({
-        success: false,
-        message: "Server Error",
-      });
-    }
-  };
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
 
-  const getChildById = async (req, res) => {
-    try {
-      const child = await Child.findOne({
-        _id: req.params.id,
-        parent: req.user.userId,
-      });
-  
-      if (!child) {
-        return res.status(404).json({
-          success: false,
-          message: "Child not found",
-        });
-      }
-  
-      res.status(200).json({
-        success: true,
-        child,
-      });
-    } catch (error) {
-      console.error(error);
-  
-      res.status(500).json({
+const updateChild = async (req, res) => {
+  try {
+    const child = await Child.findOne({
+      _id: req.params.id,
+      parent: req.user.userId,
+    });
+
+    if (!child) {
+      return res.status(404).json({
         success: false,
-        message: "Server Error",
+        message: "Child not found",
       });
     }
-  };
-  
+
+    child.name = req.body.name || child.name;
+    child.age = req.body.age || child.age;
+    child.gender = req.body.gender || child.gender;
+
+    await child.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Child updated successfully",
+      child,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+const deleteChild = async (req, res) => {
+  try {
+    const child = await Child.findOne({
+      _id: req.params.id,
+      parent: req.user.userId,
+    });
+
+    if (!child) {
+      return res.status(404).json({
+        success: false,
+        message: "Child not found",
+      });
+    }
+
+    await Child.deleteOne({
+      _id: req.params.id,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Child deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+const getChildById = async (req, res) => {
+  try {
+    const child = await Child.findOne({
+      _id: req.params.id,
+      parent: req.user.userId,
+    });
+
+    if (!child) {
+      return res.status(404).json({
+        success: false,
+        message: "Child not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      child,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
 module.exports = {
   createChild,
   getMyChildren,

@@ -3,49 +3,35 @@ import api from "./api";
 export const getChildren = async () => {
   const token = localStorage.getItem("token");
 
-  const response = await api.get(
-    "/children",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await api.get("/children", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.data;
 };
 
-export const getChildById = async (
-  childId
-) => {
+export const getChildById = async (childId) => {
   const token = localStorage.getItem("token");
 
-  const response = await api.get(
-    `/children/${childId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await api.get(`/children/${childId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.data;
 };
 
-export const createChild = async (
-  childData
-) => {
+export const createChild = async (childData) => {
   const token = localStorage.getItem("token");
 
-  const response = await api.post(
-    "/children",
-    childData,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await api.post("/children", childData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return response.data;
 };

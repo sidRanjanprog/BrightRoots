@@ -35,43 +35,35 @@ const getRecommendations = async (req, res) => {
 
     const avgScreenTime =
       screenTimes.length > 0
-        ? screenTimes.reduce(
-            (sum, item) => sum + item.durationMinutes,
-            0
-          ) / screenTimes.length
+        ? screenTimes.reduce((sum, item) => sum + item.durationMinutes, 0) /
+          screenTimes.length
         : 0;
 
     const avgSleep =
       sleepRecords.length > 0
-        ? sleepRecords.reduce(
-            (sum, item) => sum + item.sleepHours,
-            0
-          ) / sleepRecords.length
+        ? sleepRecords.reduce((sum, item) => sum + item.sleepHours, 0) /
+          sleepRecords.length
         : 0;
 
     const avgOutdoorTime =
       outdoorActivities.length > 0
         ? outdoorActivities.reduce(
             (sum, item) => sum + item.durationMinutes,
-            0
+            0,
           ) / outdoorActivities.length
         : 0;
 
-    const analysis =
-      generateRecommendations({
-        screenTimeMinutes: avgScreenTime,
-        sleepHours: avgSleep,
-        outdoorMinutes: avgOutdoorTime,
+    const analysis = generateRecommendations({
+      screenTimeMinutes: avgScreenTime,
+      sleepHours: avgSleep,
+      outdoorMinutes: avgOutdoorTime,
 
-        hasScreenData:
-          screenTimes.length > 0,
+      hasScreenData: screenTimes.length > 0,
 
-        hasSleepData:
-          sleepRecords.length > 0,
+      hasSleepData: sleepRecords.length > 0,
 
-        hasOutdoorData:
-          outdoorActivities.length > 0,
-      });
+      hasOutdoorData: outdoorActivities.length > 0,
+    });
 
     res.status(200).json({
       success: true,
@@ -83,17 +75,13 @@ const getRecommendations = async (req, res) => {
         avgOutdoorTime,
       },
 
-      wellnessScore:
-        analysis.wellnessScore,
+      wellnessScore: analysis.wellnessScore,
 
-      riskLevel:
-        analysis.riskLevel,
+      riskLevel: analysis.riskLevel,
 
-      dataWarnings:
-        analysis.dataWarnings,
+      dataWarnings: analysis.dataWarnings,
 
-      recommendations:
-        analysis.recommendations,
+      recommendations: analysis.recommendations,
     });
   } catch (error) {
     console.error(error);
@@ -105,10 +93,7 @@ const getRecommendations = async (req, res) => {
   }
 };
 
-const getDashboardInsights = async (
-  req,
-  res
-) => {
+const getDashboardInsights = async (req, res) => {
   try {
     const children = await Child.find({
       parent: req.user.userId,
@@ -135,79 +120,59 @@ const getDashboardInsights = async (
     let highestRiskLevel = -1;
 
     for (const child of children) {
-      const screenTimes =
-        await ScreenTime.find({
-          child: child._id,
-        });
+      const screenTimes = await ScreenTime.find({
+        child: child._id,
+      });
 
-      const sleepRecords =
-        await Sleep.find({
-          child: child._id,
-        });
+      const sleepRecords = await Sleep.find({
+        child: child._id,
+      });
 
-      const outdoorActivities =
-        await OutdoorActivity.find({
-          child: child._id,
-        });
+      const outdoorActivities = await OutdoorActivity.find({
+        child: child._id,
+      });
 
       const avgScreenTime =
         screenTimes.length > 0
-          ? screenTimes.reduce(
-              (sum, item) =>
-                sum + item.durationMinutes,
-              0
-            ) / screenTimes.length
+          ? screenTimes.reduce((sum, item) => sum + item.durationMinutes, 0) /
+            screenTimes.length
           : 0;
 
       const avgSleep =
         sleepRecords.length > 0
-          ? sleepRecords.reduce(
-              (sum, item) =>
-                sum + item.sleepHours,
-              0
-            ) / sleepRecords.length
+          ? sleepRecords.reduce((sum, item) => sum + item.sleepHours, 0) /
+            sleepRecords.length
           : 0;
 
       const avgOutdoorTime =
         outdoorActivities.length > 0
           ? outdoorActivities.reduce(
-              (sum, item) =>
-                sum + item.durationMinutes,
-              0
+              (sum, item) => sum + item.durationMinutes,
+              0,
             ) / outdoorActivities.length
           : 0;
 
-      const analysis =
-        generateRecommendations({
-          screenTimeMinutes:
-            avgScreenTime,
+      const analysis = generateRecommendations({
+        screenTimeMinutes: avgScreenTime,
 
-          sleepHours:
-            avgSleep,
+        sleepHours: avgSleep,
 
-          outdoorMinutes:
-            avgOutdoorTime,
+        outdoorMinutes: avgOutdoorTime,
 
-          hasScreenData:
-            screenTimes.length > 0,
+        hasScreenData: screenTimes.length > 0,
 
-          hasSleepData:
-            sleepRecords.length > 0,
+        hasSleepData: sleepRecords.length > 0,
 
-          hasOutdoorData:
-            outdoorActivities.length > 0,
-        });
+        hasOutdoorData: outdoorActivities.length > 0,
+      });
 
-      totalWellnessScore +=
-        analysis.wellnessScore;
+      totalWellnessScore += analysis.wellnessScore;
 
-      totalScreenTime +=
-        avgScreenTime;
+      totalScreenTime += avgScreenTime;
 
       totalSleep += avgSleep;
 
-      totalOutdoorTime +=
-        avgOutdoorTime;
+      totalOutdoorTime += avgOutdoorTime;
 
       const riskMap = {
         Low: 1,
@@ -215,50 +180,25 @@ const getDashboardInsights = async (
         High: 3,
       };
 
-      if (
-        riskMap[
-          analysis.riskLevel
-        ] > highestRiskLevel
-      ) {
-        highestRiskLevel =
-          riskMap[
-            analysis.riskLevel
-          ];
+      if (riskMap[analysis.riskLevel] > highestRiskLevel) {
+        highestRiskLevel = riskMap[analysis.riskLevel];
 
-        highestRiskChild =
-          child.name;
+        highestRiskChild = child.name;
       }
     }
 
     res.status(200).json({
       success: true,
 
-      totalChildren:
-        children.length,
+      totalChildren: children.length,
 
-      averageWellnessScore:
-        (
-          totalWellnessScore /
-          children.length
-        ).toFixed(1),
+      averageWellnessScore: (totalWellnessScore / children.length).toFixed(1),
 
-      averageScreenTime:
-        (
-          totalScreenTime /
-          children.length
-        ).toFixed(1),
+      averageScreenTime: (totalScreenTime / children.length).toFixed(1),
 
-      averageSleep:
-        (
-          totalSleep /
-          children.length
-        ).toFixed(1),
+      averageSleep: (totalSleep / children.length).toFixed(1),
 
-      averageOutdoorTime:
-        (
-          totalOutdoorTime /
-          children.length
-        ).toFixed(1),
+      averageOutdoorTime: (totalOutdoorTime / children.length).toFixed(1),
 
       highestRiskChild,
     });

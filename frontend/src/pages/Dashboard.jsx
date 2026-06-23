@@ -134,7 +134,7 @@ const Dashboard = () => {
 
         <button
           type="submit"
-          className="bg-green-600 text-white px-6 py-3 rounded"
+          className="bg-green-600 text-white px-6 py-3 rounded cursor-pointer"
         >
           Add Child
         </button>
@@ -214,7 +214,7 @@ const Dashboard = () => {
 
               <button
                 onClick={() => navigate(`/dashboard/child/${child._id}`)}
-                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
               >
                 View Profile
               </button>
