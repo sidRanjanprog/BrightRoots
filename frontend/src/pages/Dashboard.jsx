@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [dashboardInsights, setDashboardInsights] = useState(null);
   const navigate = useNavigate();
 
+
   const [formData, setFormData] = useState({
     name: "",
     age: "",

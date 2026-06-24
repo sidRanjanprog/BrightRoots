@@ -5,6 +5,9 @@ import Philosophy from "../components/Philosophy";
 import Features from "../components/Features";
 import HowItWorks from "../components/HowItWorks";
 import DashboardPreview from "../components/landing/DashboardPreview";
+import ParentGuidanceHub from "../components/ParentGuidanceHub";
+import ResourcesCenter from "../components/ResourcesCenter";
+import Footer from "../components/Footer";
 
 const LandingPage = () => {
   return (
@@ -16,6 +19,9 @@ const LandingPage = () => {
       <Features />
       <HowItWorks />
       <DashboardPreview />
+      <ParentGuidanceHub />
+      <ResourcesCenter />
+      <Footer />
     </>
   );
 };
