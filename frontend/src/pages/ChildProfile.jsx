@@ -1,53 +1,40 @@
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
-  PointElement,
   LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
 } from "chart.js";
 
+import { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 import { getChildById } from "../services/childService";
 
 import {
   createScreenTime,
-  getScreenTimes,
   deleteScreenTime,
+  getScreenTimes,
   updateScreenTime,
 } from "../services/screenTimeService";
 
-import {
-  createSleep,
-  getSleepRecords,
-  deleteSleep,
-  updateSleep,
-} from "../services/sleepService";
+import { createSleep, deleteSleep, getSleepRecords, updateSleep } from "../services/sleepService";
 
 import {
   createOutdoorActivity,
-  getOutdoorActivities,
   deleteOutdoorActivity,
+  getOutdoorActivities,
   updateOutdoorActivity,
 } from "../services/outdoorActivityService";
 
-import { getRecommendations } from "../services/recommendationService";
 import { toast } from "react-toastify";
+import { getRecommendations } from "../services/recommendationService";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const ChildProfile = () => {
   const { id } = useParams();
@@ -106,9 +93,7 @@ const ChildProfile = () => {
   };
 
   const handleDeleteScreenTime = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this record?",
-    );
+    const confirmed = window.confirm("Are you sure you want to delete this record?");
 
     if (!confirmed) {
       return;
@@ -122,9 +107,7 @@ const ChildProfile = () => {
     } catch (error) {
       console.error(error);
 
-      toast.error(
-        error.response?.data?.message || "Failed to delete screen time",
-      );
+      toast.error(error.response?.data?.message || "Failed to delete screen time");
     }
   };
 
@@ -136,9 +119,7 @@ const ChildProfile = () => {
   };
 
   const handleDeleteSleep = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this record?",
-    );
+    const confirmed = window.confirm("Are you sure you want to delete this record?");
 
     if (!confirmed) {
       return;
@@ -151,9 +132,7 @@ const ChildProfile = () => {
       await fetchSleepRecords();
     } catch (error) {
       console.error(error);
-      toast.error(
-        error.response?.data?.message || "Failed to delete sleep record",
-      );
+      toast.error(error.response?.data?.message || "Failed to delete sleep record");
     }
   };
 
@@ -165,9 +144,7 @@ const ChildProfile = () => {
   };
 
   const handleDeleteOutdoorActivity = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this record?",
-    );
+    const confirmed = window.confirm("Are you sure you want to delete this record?");
 
     if (!confirmed) {
       return;
@@ -181,9 +158,7 @@ const ChildProfile = () => {
     } catch (error) {
       console.error(error);
 
-      toast.error(
-        error.response?.data?.message || "Failed to delete outdoor activity",
-      );
+      toast.error(error.response?.data?.message || "Failed to delete outdoor activity");
     }
   };
 
@@ -230,9 +205,7 @@ const ChildProfile = () => {
       const isEditing = Boolean(editingSleepId);
 
       toast.success(
-        isEditing
-          ? "Sleep record updated successfully!"
-          : "Sleep record saved successfully!",
+        isEditing ? "Sleep record updated successfully!" : "Sleep record saved successfully!"
       );
 
       console.log(response);
@@ -247,9 +220,7 @@ const ChildProfile = () => {
     } catch (error) {
       console.error(error);
 
-      toast.error(
-        error.response?.data?.message || "Failed to save sleep record",
-      );
+      toast.error(error.response?.data?.message || "Failed to save sleep record");
     } finally {
       setSleepLoading(false);
     }
@@ -300,7 +271,7 @@ const ChildProfile = () => {
       toast.success(
         isEditing
           ? "Outdoor activity updated successfully!"
-          : "Outdoor activity saved successfully!",
+          : "Outdoor activity saved successfully!"
       );
 
       console.log(response);
@@ -315,9 +286,7 @@ const ChildProfile = () => {
     } catch (error) {
       console.error(error);
 
-      toast.error(
-        error.response?.data?.message || "Failed to save outdoor activity",
-      );
+      toast.error(error.response?.data?.message || "Failed to save outdoor activity");
     } finally {
       setOutdoorLoading(false);
     }
@@ -361,9 +330,7 @@ const ChildProfile = () => {
       }
 
       toast.success(
-        isEditing
-          ? "Screen time updated successfully!"
-          : "Screen time saved successfully!",
+        isEditing ? "Screen time updated successfully!" : "Screen time saved successfully!"
       );
 
       console.log(response);
@@ -378,9 +345,7 @@ const ChildProfile = () => {
     } catch (error) {
       console.error(error);
 
-      toast.error(
-        error.response?.data?.message || "Failed to save screen time",
-      );
+      toast.error(error.response?.data?.message || "Failed to save screen time");
     } finally {
       setScreenTimeLoading(false);
     }
@@ -461,112 +426,306 @@ const ChildProfile = () => {
     );
   }
 
-  const sortedScreenTimes = [...screenTimes].sort(
-    (a, b) => new Date(a.date) - new Date(b.date)
-  );
-  
+  const sortedScreenTimes = [...screenTimes].sort((a, b) => new Date(a.date) - new Date(b.date));
+
   const screenTimeChartData = {
     labels: sortedScreenTimes.map((record) =>
-      new Date(record.date).toLocaleDateString()
+      new Date(record.date).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+      })
     ),
-  
+
     datasets: [
       {
-        label: "Screen Time (Minutes)",
-        data: sortedScreenTimes.map(
-          (record) => record.durationMinutes
-        ),
+        label: "Screen Time",
+        data: sortedScreenTimes.map((record) => record.durationMinutes),
+
         borderColor: "rgb(59,130,246)",
-        backgroundColor: "rgba(59,130,246,0.5)",
+        backgroundColor: "rgb(59,130,246)",
+
+        borderWidth: 3,
+
+        pointRadius: 5,
+        pointHoverRadius: 7,
+
+        pointBackgroundColor: "rgb(59,130,246)",
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+
+        tension: 0.35,
+
+        fill: false,
       },
     ],
   };
 
-  const sortedSleepRecords = [...sleepRecords].sort(
-    (a, b) => new Date(a.date) - new Date(b.date)
-  );
+  const screenTimeChartOptions = {
+    responsive: true,
+
+    maintainAspectRatio: false,
+
+    plugins: {
+      legend: {
+        display: false,
+      },
+
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.parsed.y} mins`,
+        },
+      },
+    },
+
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+
+        ticks: {
+          color: "#6B7280",
+        },
+      },
+
+      y: {
+        beginAtZero: true,
+
+        ticks: {
+          stepSize: 20,
+          color: "#6B7280",
+        },
+
+        grid: {
+          color: "#E5E7EB",
+        },
+      },
+    },
+  };
+
+  const sortedSleepRecords = [...sleepRecords].sort((a, b) => new Date(a.date) - new Date(b.date));
 
   const sleepChartData = {
     labels: sortedSleepRecords.map((record) =>
-      new Date(record.date).toLocaleDateString(),
+      new Date(record.date).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+      })
     ),
 
     datasets: [
       {
-        label: "Sleep Hours",
+        label: "Sleep",
         data: sortedSleepRecords.map((record) => record.sleepHours),
-        borderColor: "rgb(34,197,94)",
-        backgroundColor: "rgba(34,197,94,0.5)",
+
+        borderColor: "rgb(59,130,246)",
+        backgroundColor: "rgb(59,130,246)",
+
+        borderWidth: 3,
+
+        pointRadius: 5,
+        pointHoverRadius: 7,
+
+        pointBackgroundColor: "rgb(59,130,246)",
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+
+        tension: 0.35,
+
+        fill: false,
       },
     ],
+  };
+
+  const sleepChartOptions = {
+    responsive: true,
+
+    maintainAspectRatio: false,
+
+    plugins: {
+      legend: {
+        display: false,
+      },
+
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.parsed.y} hours`,
+        },
+      },
+    },
+
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+
+        ticks: {
+          color: "#6B7280",
+        },
+      },
+
+      y: {
+        beginAtZero: true,
+
+        ticks: {
+          stepSize: 1,
+          color: "#6B7280",
+        },
+
+        grid: {
+          color: "#E5E7EB",
+        },
+      },
+    },
   };
 
   const sortedOutdoorActivities = [...outdoorActivities].sort(
     (a, b) => new Date(a.date) - new Date(b.date)
   );
 
-  const outdoorActivityChartData = {
-    labels: sortedOutdoorActivities.map((activity) =>
-      new Date(activity.date).toLocaleDateString(),
+  const outdoorChartData = {
+    labels: sortedOutdoorActivities.map((record) =>
+      new Date(record.date).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+      })
     ),
 
     datasets: [
       {
-        label: "Outdoor Activity (Minutes)",
-        data: sortedOutdoorActivities.map((activity) => activity.durationMinutes),
-        borderColor: "rgb(249,115,22)",
-        backgroundColor: "rgba(249,115,22,0.5)",
+        label: "Outdoor Activity",
+        data: sortedOutdoorActivities.map((record) => record.durationMinutes),
+
+        borderColor: "rgb(59,130,246)",
+        backgroundColor: "rgb(59,130,246)",
+
+        borderWidth: 3,
+
+        pointRadius: 5,
+        pointHoverRadius: 7,
+
+        pointBackgroundColor: "rgb(59,130,246)",
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+
+        tension: 0.25,
+
+        fill: false,
       },
     ],
+  };
+
+  const outdoorChartOptions = {
+    responsive: true,
+
+    maintainAspectRatio: false,
+
+    plugins: {
+      legend: {
+        display: false,
+      },
+
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.parsed.y} mins`,
+        },
+      },
+    },
+
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+
+        ticks: {
+          color: "#6B7280",
+        },
+      },
+
+      y: {
+        beginAtZero: true,
+
+        ticks: {
+          stepSize: 20,
+          color: "#6B7280",
+        },
+
+        grid: {
+          color: "#E5E7EB",
+        },
+      },
+    },
   };
 
   return (
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-4xl font-bold mb-8">Child Profile</h1>
 
-      <div className="bg-white p-6 rounded shadow">
-        <p className="mb-3">
-          <strong>Name:</strong> {child.name}
-        </p>
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
+        <div className="mb-5">
+          <p className="text-sm font-medium text-gray-500">Name</p>
+          <p className="text-lg font-semibold text-gray-800 mt-1">{child.name}</p>
+        </div>
 
-        <p className="mb-3">
-          <strong>Age:</strong> {child.age}
-        </p>
+        <div className="mb-5">
+          <p className="text-sm font-medium text-gray-500">Age</p>
+          <p className="text-lg font-semibold text-gray-800 mt-1">{child.age} Years</p>
+        </div>
 
-        <p className="mb-3">
-          <strong>Gender:</strong> {child.gender}
-        </p>
+        <div className="mb-5">
+          <p className="text-sm font-medium text-gray-500">Gender</p>
+          <p className="text-lg font-semibold text-gray-800 mt-1">{child.gender}</p>
+        </div>
       </div>
 
       {/* Screen Form */}
       <form
         ref={screenTimeFormRef}
         onSubmit={handleScreenTimeSubmit}
-        className="bg-white p-6 rounded shadow mt-8"
+        className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8"
       >
-        <h2 className="text-2xl font-semibold mb-4">Add Screen Time</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Screen Time</h2>
+        <label htmlFor="screen-date" className="block text-sm font-medium text-gray-700 mb-2">
+          Date
+        </label>
 
         <input
+          id="screen-date"
           type="date"
           name="date"
-          className="w-full border p-3 mb-4 rounded"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={screenTimeData.date}
           onChange={handleScreenTimeChange}
           max={new Date().toISOString().split("T")[0]}
         />
 
+        <label htmlFor="screen-duration" className="block text-sm font-medium text-gray-700 mb-2">
+          Duration (Minutes)
+        </label>
+
         <input
+          id="screen-duration"
           type="number"
           name="durationMinutes"
-          placeholder="Duration (Minutes)"
-          className="w-full border p-3 mb-4 rounded"
+          placeholder="Enter duration in minutes"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={screenTimeData.durationMinutes}
           onChange={handleScreenTimeChange}
         />
 
+        <label
+          htmlFor="screen-activity-type"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Activity Type
+        </label>
+
         <select
+          id="screen-activity-type"
           name="activityType"
-          className="w-full border p-3 mb-4 rounded"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={screenTimeData.activityType}
           onChange={handleScreenTimeChange}
         >
@@ -584,7 +743,7 @@ const ChildProfile = () => {
         <button
           type="submit"
           disabled={screenTimeLoading}
-          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50 cursor-pointer"
+          className="bg-blue-600 hover:enabled:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {screenTimeLoading
             ? "Saving..."
@@ -595,96 +754,152 @@ const ChildProfile = () => {
       </form>
 
       {/* Screen Time History */}
-      <div className="bg-white p-6 rounded shadow mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Screen Time Records</h2>
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Screen Time Records</h2>
 
         {screenTimes.length === 0 ? (
-          <p>No screen time records yet.</p>
+          <div className="bg-white rounded-2xl shadow-md p-8 text-center border border-gray-100">
+            <p className="text-gray-500 text-lg">No screen time records yet.</p>
+
+            <p className="text-gray-400 mt-2">
+              Add your first screen time record to begin tracking.
+            </p>
+          </div>
         ) : (
           screenTimes.map((record) => (
-            <div key={record._id} className="border p-4 rounded mb-3">
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(record.date).toLocaleDateString()}
-              </p>
+            <div key={record._id} className="border border-gray-200 rounded-xl p-5 mb-4 bg-gray-50">
+              <div className="space-y-2">
+                <div className="flex items-center py-2">
+                  <span className="min-w-[140px] shrink-0 text-sm font-medium text-gray-500">
+                    Date
+                  </span>
 
-              <p>
-                <strong>Duration:</strong> {record.durationMinutes} mins
-              </p>
+                  <span className="text-base font-semibold text-gray-900">
+                    {new Date(record.date).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
 
-              <p>
-                <strong>Activity:</strong> {record.activityType}
-              </p>
+                <div className="flex items-center py-2">
+                  <span className="min-w-[140px] shrink-0 text-sm font-medium text-gray-500">
+                    Duration
+                  </span>
 
-              <button
-                onClick={() => handleDeleteScreenTime(record._id)}
-                className="mt-2 mr-2 bg-red-600 text-white px-3 py-2 rounded cursor-pointer"
-              >
-                Delete
-              </button>
+                  <span className="text-base font-semibold text-gray-900">
+                    {record.durationMinutes} mins
+                  </span>
+                </div>
 
-              <button
-                onClick={() => {
-                  setEditingScreenTimeId(record._id);
+                <div className="flex items-center py-2">
+                  <span className="min-w-[140px] shrink-0 text-sm font-medium text-gray-500">
+                    Activity
+                  </span>
 
-                  setScreenTimeData({
-                    date: record.date.split("T")[0],
+                  <span className="text-base font-semibold text-gray-900">
+                    {record.activityType}
+                  </span>
+                </div>
+              </div>
 
-                    durationMinutes: record.durationMinutes,
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={() => handleDeleteScreenTime(record._id)}
+                  className="min-w-[90px] bg-red-600 hover:enabled:bg-red-700 text-white font-medium px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer"
+                >
+                  Delete
+                </button>
 
-                    activityType: record.activityType,
-                  });
+                <button
+                  onClick={() => {
+                    setEditingScreenTimeId(record._id);
 
-                  screenTimeFormRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                  });
-                }}
-                className="mt-2 bg-yellow-500 text-white px-3 py-2 rounded cursor-pointer"
-              >
-                Edit
-              </button>
+                    setScreenTimeData({
+                      date: record.date.split("T")[0],
+                      durationMinutes: record.durationMinutes,
+                      activityType: record.activityType,
+                    });
+
+                    screenTimeFormRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
+                  className="min-w-[90px] bg-yellow-500 hover:enabled:bg-yellow-600 text-white font-medium px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer"
+                >
+                  Edit
+                </button>
+              </div>
             </div>
           ))
         )}
       </div>
 
       {/* Screen Time Trend Chart */}
-      <div className="bg-white p-6 rounded shadow mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Screen Time Trend</h2>
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Screen Time Trend</h2>
 
-        <Line data={screenTimeChartData} />
+        {screenTimes.length === 0 ? (
+          <div className="flex items-center justify-center h-[350px] text-center">
+            <div>
+              <p className="text-lg text-gray-500">No screen time data available.</p>
+
+              <p className="text-gray-400 mt-2">Add records to visualize trends.</p>
+            </div>
+          </div>
+        ) : (
+          <div className="h-[350px]">
+            <Line data={screenTimeChartData} options={screenTimeChartOptions} />
+          </div>
+        )}
       </div>
 
       {/* Sleep Form */}
       <form
         ref={sleepFormRef}
         onSubmit={handleSleepSubmit}
-        className="bg-white p-6 rounded shadow mt-8"
+        className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8"
       >
-        <h2 className="text-2xl font-semibold mb-4">Add Sleep Record</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Sleep Record</h2>
+
+        <label htmlFor="sleep-date" className="block text-sm font-medium text-gray-700 mb-2">
+          Date
+        </label>
 
         <input
+          id="sleep-date"
           type="date"
           name="date"
-          className="w-full border p-3 mb-4 rounded"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={sleepData.date}
           onChange={handleSleepChange}
           max={new Date().toISOString().split("T")[0]}
         />
 
+        <label htmlFor="sleep-hours" className="block text-sm font-medium text-gray-700 mb-2">
+          Sleep Hours
+        </label>
+
         <input
+          id="sleep-hours"
           type="number"
           name="sleepHours"
-          placeholder="Sleep Hours"
-          className="w-full border p-3 mb-4 rounded"
+          placeholder="Enter sleep hours"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={sleepData.sleepHours}
           onChange={handleSleepChange}
         />
 
+        <label htmlFor="sleep-quality" className="block text-sm font-medium text-gray-700 mb-2">
+          Sleep Quality
+        </label>
+
         <select
+          id="sleep-quality"
           name="sleepQuality"
-          className="w-full border p-3 mb-4 rounded"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={sleepData.sleepQuality}
           onChange={handleSleepChange}
         >
@@ -700,7 +915,7 @@ const ChildProfile = () => {
         <button
           type="submit"
           disabled={sleepLoading}
-          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50 cursor-pointer"
+          className="bg-blue-600 hover:enabled:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {sleepLoading
             ? "Saving..."
@@ -710,107 +925,168 @@ const ChildProfile = () => {
         </button>
       </form>
 
-      {/* Sleep History*/}
-      <div className="bg-white p-6 rounded shadow mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Sleep History</h2>
+      {/* Sleep History */}
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Sleep History</h2>
 
         {sleepRecords.length === 0 ? (
-          <p>No sleep records yet.</p>
+          <div className="bg-white rounded-2xl shadow-md p-8 text-center border border-gray-100">
+            <p className="text-gray-500 text-lg">No sleep records yet.</p>
+
+            <p className="text-gray-400 mt-2">Add your first sleep record to begin tracking.</p>
+          </div>
         ) : (
           sleepRecords.map((record) => (
-            <div key={record._id} className="border p-4 rounded mb-3">
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(record.date).toLocaleDateString()}
-              </p>
+            <div key={record._id} className="border border-gray-200 rounded-xl p-5 mb-4 bg-gray-50">
+              <div className="space-y-2">
+                <div className="flex items-center py-2">
+                  <span className="min-w-[140px] shrink-0 text-sm font-medium text-gray-500">
+                    Date
+                  </span>
 
-              <p>
-                <strong>Sleep Hours:</strong> {record.sleepHours}
-              </p>
+                  <span className="text-base font-semibold text-gray-900">
+                    {new Date(record.date).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
 
-              <p>
-                <strong>Quality:</strong> {record.sleepQuality}
-              </p>
+                <div className="flex items-center py-2">
+                  <span className="min-w-[140px] shrink-0 text-sm font-medium text-gray-500">
+                    Sleep Hours
+                  </span>
 
-              <button
-                onClick={() => handleDeleteSleep(record._id)}
-                className="mt-2 mr-2 bg-red-600 text-white px-3 py-2 rounded cursor-pointer"
-              >
-                Delete
-              </button>
+                  <span className="text-base font-semibold text-gray-900">
+                    {record.sleepHours} hrs
+                  </span>
+                </div>
 
-              <button
-                onClick={() => {
-                  setEditingSleepId(record._id);
+                <div className="flex items-center py-2">
+                  <span className="min-w-[140px] shrink-0 text-sm font-medium text-gray-500">
+                    Sleep Quality
+                  </span>
 
-                  setSleepData({
-                    date: record.date.split("T")[0],
+                  <span className="text-base font-semibold text-gray-900">
+                    {record.sleepQuality}
+                  </span>
+                </div>
+              </div>
 
-                    sleepHours: record.sleepHours,
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={() => handleDeleteSleep(record._id)}
+                  className="min-w-[90px] bg-red-600 hover:enabled:bg-red-700 text-white font-medium px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer"
+                >
+                  Delete
+                </button>
 
-                    sleepQuality: record.sleepQuality,
-                  });
+                <button
+                  onClick={() => {
+                    setEditingSleepId(record._id);
 
-                  sleepFormRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                  });
-                }}
-                className="mt-2 bg-yellow-500 text-white px-3 py-2 rounded cursor-pointer"
-              >
-                Edit
-              </button>
+                    setSleepData({
+                      date: record.date.split("T")[0],
+                      sleepHours: record.sleepHours,
+                      sleepQuality: record.sleepQuality,
+                    });
+
+                    sleepFormRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
+                  className="min-w-[90px] bg-yellow-500 hover:enabled:bg-yellow-600 text-white font-medium px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer"
+                >
+                  Edit
+                </button>
+              </div>
             </div>
           ))
         )}
       </div>
 
       {/* Sleep Trend Chart */}
-      <div className="bg-white p-6 rounded shadow mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Sleep Trend</h2>
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Sleep Trend</h2>
 
-        <Line data={sleepChartData} />
+        {sleepRecords.length === 0 ? (
+          <div className="flex items-center justify-center h-[350px] text-center">
+            <div>
+              <p className="text-lg text-gray-500">No sleep data available.</p>
+
+              <p className="text-gray-400 mt-2">Add sleep records to visualize trends.</p>
+            </div>
+          </div>
+        ) : (
+          <div className="h-[350px]">
+            <Line data={sleepChartData} options={sleepChartOptions} />
+          </div>
+        )}
       </div>
 
       {/* Outdoor Activity Form */}
       <form
         ref={outdoorFormRef}
         onSubmit={handleOutdoorSubmit}
-        className="bg-white p-6 rounded shadow mt-8"
+        className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8"
       >
-        <h2 className="text-2xl font-semibold mb-4">Add Outdoor Activity</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Outdoor Activity</h2>
+
+        <label htmlFor="outdoor-date" className="block text-sm font-medium text-gray-700 mb-2">
+          Date
+        </label>
 
         <input
+          id="outdoor-date"
           type="date"
           name="date"
-          className="w-full border p-3 mb-4 rounded"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={outdoorData.date}
           onChange={handleOutdoorChange}
           max={new Date().toISOString().split("T")[0]}
         />
 
+        <label
+          htmlFor="outdoor-duration-minutes"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Duration (Minutes)
+        </label>
+
         <input
-          type="text"
-          name="activityType"
-          placeholder="Activity Type"
-          className="w-full border p-3 mb-4 rounded"
-          value={outdoorData.activityType}
+          id="outdoor-duration-minutes"
+          type="number"
+          name="durationMinutes"
+          min="1"
+          placeholder="Enter duration in minutes"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          value={outdoorData.durationMinutes}
           onChange={handleOutdoorChange}
         />
 
+        <label
+          htmlFor="outdoor-activity-type"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Activity Type
+        </label>
+
         <input
-          type="number"
-          name="durationMinutes"
-          placeholder="Duration (Minutes)"
-          className="w-full border p-3 mb-4 rounded"
-          value={outdoorData.durationMinutes}
+          id="outdoor-activity-type"
+          type="text"
+          name="activityType"
+          placeholder="e.g. Cycling"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          value={outdoorData.activityType}
           onChange={handleOutdoorChange}
         />
 
         <button
           type="submit"
           disabled={outdoorLoading}
-          className="bg-blue-600 text-white px-6 py-3 rounded disabled:opacity-50 cursor-pointer"
+          className="bg-blue-600 hover:enabled:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {outdoorLoading
             ? "Saving..."
@@ -821,33 +1097,61 @@ const ChildProfile = () => {
       </form>
 
       {/* Outdoor Activity History */}
-      <div className="bg-white p-6 rounded shadow mt-8">
-        <h2 className="text-2xl font-semibold mb-4">
-          Outdoor Activity History
-        </h2>
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Outdoor Activity History</h2>
 
         {outdoorActivities.length === 0 ? (
-          <p>No outdoor activities yet.</p>
+          <div className="bg-white rounded-2xl shadow-md p-8 text-center border border-gray-100">
+            <p className="text-gray-500 text-lg">No outdoor activities yet.</p>
+
+            <p className="text-gray-400 mt-2">Add your first outdoor activity to begin tracking.</p>
+          </div>
         ) : (
           outdoorActivities.map((activity) => (
-            <div key={activity._id} className="border p-4 rounded mb-3">
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(activity.date).toLocaleDateString()}
-              </p>
+            <div
+              key={activity._id}
+              className="border border-gray-200 rounded-xl p-5 mb-4 bg-gray-50"
+            >
+              <div className="space-y-2">
+                <div className="flex items-center py-2">
+                  <span className="min-w-[140px] shrink-0 text-sm font-medium text-gray-500">
+                    Date
+                  </span>
 
-              <p>
-                <strong>Activity:</strong> {activity.activityType}
-              </p>
+                  <span className="text-base font-semibold text-gray-900">
+                    {new Date(activity.date).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
 
-              <p>
-                <strong>Duration:</strong> {activity.durationMinutes} mins
-              </p>
+                <div className="flex items-center py-2">
+                  <span className="min-w-[140px] shrink-0 text-sm font-medium text-gray-500">
+                    Duration
+                  </span>
 
-              <div className="flex gap-2 mt-2">
+                  <span className="text-base font-semibold text-gray-900">
+                    {activity.durationMinutes} mins
+                  </span>
+                </div>
+
+                <div className="flex items-center py-2">
+                  <span className="min-w-[140px] shrink-0 text-sm font-medium text-gray-500">
+                    Activity
+                  </span>
+
+                  <span className="text-base font-semibold text-gray-900">
+                    {activity.activityType}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => handleDeleteOutdoorActivity(activity._id)}
-                  className="bg-red-600 text-white px-3 py-2 rounded cursor-pointer"
+                  className="min-w-[90px] bg-red-600 hover:enabled:bg-red-700 text-white font-medium px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer"
                 >
                   Delete
                 </button>
@@ -858,9 +1162,7 @@ const ChildProfile = () => {
 
                     setOutdoorData({
                       date: activity.date.split("T")[0],
-
                       activityType: activity.activityType,
-
                       durationMinutes: activity.durationMinutes,
                     });
 
@@ -869,7 +1171,7 @@ const ChildProfile = () => {
                       block: "start",
                     });
                   }}
-                  className="bg-yellow-500 text-white px-3 py-2 rounded cursor-pointer"
+                  className="min-w-[90px] bg-yellow-500 hover:enabled:bg-yellow-600 text-white font-medium px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer"
                 >
                   Edit
                 </button>
@@ -880,14 +1182,26 @@ const ChildProfile = () => {
       </div>
 
       {/* Outdoor Activity Trend Chart */}
-      <div className="bg-white p-6 rounded shadow mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Outdoor Activity Trend</h2>
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Outdoor Activity Trend</h2>
 
-        <Line data={outdoorActivityChartData} />
+        {outdoorActivities.length === 0 ? (
+          <div className="flex items-center justify-center h-[350px] text-center">
+            <div>
+              <p className="text-lg text-gray-500">No outdoor activity data available.</p>
+
+              <p className="text-gray-400 mt-2">Add outdoor activities to visualize trends.</p>
+            </div>
+          </div>
+        ) : (
+          <div className="h-[350px]">
+            <Line data={outdoorChartData} options={outdoorChartOptions} />
+          </div>
+        )}
       </div>
 
-      <div className="bg-white p-6 rounded shadow mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Recommendations</h2>
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Recommendations</h2>
 
         <button
           onClick={fetchRecommendations}
@@ -900,8 +1214,7 @@ const ChildProfile = () => {
           <>
             <div className="mb-4">
               <p>
-                <strong>Wellness Score:</strong>{" "}
-                {recommendationData.wellnessScore}
+                <strong>Wellness Score:</strong> {recommendationData.wellnessScore}
               </p>
 
               <p>
@@ -916,13 +1229,10 @@ const ChildProfile = () => {
                 Average Screen Time: {recommendationData.metrics.avgScreenTime?.toFixed(2)} mins
               </p>
 
-              <p>
-                Average Sleep: {recommendationData.metrics.avgSleep?.toFixed(2)} hrs
-              </p>
+              <p>Average Sleep: {recommendationData.metrics.avgSleep?.toFixed(2)} hrs</p>
 
               <p>
-                Average Outdoor Time:{" "}
-                {recommendationData.metrics.avgOutdoorTime?.toFixed(2)} mins
+                Average Outdoor Time: {recommendationData.metrics.avgOutdoorTime?.toFixed(2)} mins
               </p>
             </div>
 
@@ -930,11 +1240,9 @@ const ChildProfile = () => {
               <h3 className="font-semibold">Recommendations</h3>
 
               <ul className="list-disc pl-6">
-                {recommendationData.recommendations.map(
-                  (recommendation, index) => (
-                    <li key={index}>{recommendation}</li>
-                  ),
-                )}
+                {recommendationData.recommendations.map((recommendation, index) => (
+                  <li key={index}>{recommendation}</li>
+                ))}
               </ul>
             </div>
 
