@@ -77,7 +77,7 @@ const ChildProfile = () => {
 
   const [editingOutdoorId, setEditingOutdoorId] = useState(null);
 
-  const [recommendationData, setRecommendationData] = useState(false);
+  const [recommendationData, setRecommendationData] = useState(null);
 
   const [recommendationLoading, setRecommendationLoading] = useState(false);
 
@@ -212,9 +212,10 @@ const ChildProfile = () => {
         isEditing ? "Sleep record updated successfully!" : "Sleep record saved successfully!"
       );
 
-      console.log(response);
-
       await fetchSleepRecords();
+
+      setRecommendationData(null);
+      setRecommendationError("");
 
       setSleepData({
         date: "",
@@ -278,9 +279,10 @@ const ChildProfile = () => {
           : "Outdoor activity saved successfully!"
       );
 
-      console.log(response);
-
       await fetchOutdoorActivities();
+
+      setRecommendationData(null);
+      setRecommendationError("");
 
       setOutdoorData({
         date: "",
@@ -337,9 +339,9 @@ const ChildProfile = () => {
         isEditing ? "Screen time updated successfully!" : "Screen time saved successfully!"
       );
 
-      console.log(response);
-
       await fetchScreenTimes();
+      setRecommendationData(null);
+      setRecommendationError("");
 
       setScreenTimeData({
         date: "",
@@ -359,8 +361,6 @@ const ChildProfile = () => {
     try {
       const data = await getChildById(id);
 
-      console.log(data);
-
       setChild(data.child);
     } catch (error) {
       console.error(error);
@@ -370,8 +370,6 @@ const ChildProfile = () => {
   const fetchScreenTimes = async () => {
     try {
       const data = await getScreenTimes(id);
-
-      console.log(data);
 
       setScreenTimes(data.screenTimes);
     } catch (error) {
@@ -383,8 +381,6 @@ const ChildProfile = () => {
     try {
       const data = await getSleepRecords(id);
 
-      console.log(data);
-
       setSleepRecords(data.sleepRecords);
     } catch (error) {
       console.error(error);
@@ -394,8 +390,6 @@ const ChildProfile = () => {
   const fetchOutdoorActivities = async () => {
     try {
       const data = await getOutdoorActivities(id);
-
-      console.log(data);
 
       setOutdoorActivities(data.activities);
     } catch (error) {
@@ -431,7 +425,9 @@ const ChildProfile = () => {
   if (!child) {
     return (
       <div className="max-w-4xl mx-auto p-8">
-        <h1>Loading...</h1>
+        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-10 text-center">
+          <p className="text-lg text-gray-600">Loading child profile...</p>
+        </div>
       </div>
     );
   }
@@ -1293,7 +1289,11 @@ const ChildProfile = () => {
           disabled={recommendationLoading}
           className="bg-green-600 hover:enabled:bg-green-700 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {recommendationLoading ? "Analyzing..." : "Analyze Wellness"}
+          {recommendationLoading
+            ? "Analyzing..."
+            : recommendationData
+              ? "Reanalyze Wellness"
+              : "Analyze Wellness"}
         </button>
 
         {recommendationError && (
@@ -1308,7 +1308,7 @@ const ChildProfile = () => {
           </div>
         )}
 
-        {!recommendationData ? (
+        {!recommendationData && (
           <div className="mt-8 bg-gray-50 border border-gray-200 rounded-2xl p-8 text-center">
             <p className="text-lg font-semibold text-gray-700">No wellness analysis available.</p>
 
@@ -1316,10 +1316,6 @@ const ChildProfile = () => {
               Click <strong>Analyze Wellness</strong> to receive personalized recommendations based
               on your child's wellness data.
             </p>
-          </div>
-        ) : (
-          <div className="mt-6 bg-red-50 border border-red-200 rounded-2xl p-5">
-            <p className="text-red-700 font-medium">{recommendationError}</p>
           </div>
         )}
 
