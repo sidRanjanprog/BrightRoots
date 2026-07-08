@@ -68,12 +68,11 @@ const Dashboard = () => {
         toast.error("Please select a gender");
         return;
       }
-      const response = await createChild(formData);
+      await createChild(formData);
+
       toast.success("Child added successfully!");
 
-      console.log(response);
-
-      await fetchChildren();
+      await Promise.all([fetchChildren(), fetchDashboardInsights()]);
 
       setFormData({
         name: "",
@@ -90,7 +89,7 @@ const Dashboard = () => {
 
   const initializeDashboard = async () => {
     setLoading(true);
-  
+
     try {
       await Promise.all([
         fetchChildren(),
@@ -100,17 +99,21 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     initializeDashboard();
   }, []);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-medium text-gray-600">
-          Loading Dashboard...
-        </p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-10 text-center">
+          <div className="w-10 h-10 mx-auto mb-5 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+
+          <h2 className="text-xl font-semibold text-gray-800">Loading Dashboard</h2>
+
+          <p className="text-gray-500 mt-2">Preparing your dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -136,7 +139,7 @@ const Dashboard = () => {
           type="text"
           name="name"
           placeholder="Enter child's name"
-          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
           value={formData.name}
           onChange={handleChange}
         />
@@ -152,7 +155,7 @@ const Dashboard = () => {
           id="age"
           type="number"
           name="age"
-          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
           value={formData.age}
           onChange={handleChange}
         />
@@ -167,7 +170,7 @@ const Dashboard = () => {
         <select
           id="gender"
           name="gender"
-          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
           value={formData.gender}
           onChange={handleChange}
         >
