@@ -31,8 +31,11 @@ import {
   updateOutdoorActivity,
 } from "../services/outdoorActivityService";
 
+import ChildInfoCard from "../components/sections/ChildInfoCard";
+
 import { getRecommendations } from "../services/recommendationService";
-import RecommendationSection from "../components/recommendation/RecommendationSection";
+import RecommendationSection from "../components/sections/RecommendationSection";
+import ScreenTimeSection from "../components/sections/ScreenTimeSection";
 
 import { toast } from "react-toastify";
 
@@ -746,22 +749,7 @@ const ChildProfile = () => {
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-4xl font-bold mb-8">Child Profile</h1>
 
-      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-        <div className="mb-5">
-          <p className="text-sm font-medium text-gray-500">Name</p>
-          <p className="text-lg font-semibold text-gray-800 mt-1">{child.name}</p>
-        </div>
-
-        <div className="mb-5">
-          <p className="text-sm font-medium text-gray-500">Age</p>
-          <p className="text-lg font-semibold text-gray-800 mt-1">{child.age} Years</p>
-        </div>
-
-        <div className="mb-5">
-          <p className="text-sm font-medium text-gray-500">Gender</p>
-          <p className="text-lg font-semibold text-gray-800 mt-1">{child.gender}</p>
-        </div>
-      </div>
+      <ChildInfoCard child={child} />
 
       {/* Screen Form */}
       <form
