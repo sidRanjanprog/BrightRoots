@@ -107,12 +107,12 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-10 text-center">
-          <div className="w-10 h-10 mx-auto mb-5 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-12 text-center">
+          <div className="w-10 h-10 mx-auto mb-5 border-[5px] border-green-600 border-t-transparent rounded-full animate-spin"></div>
 
           <h2 className="text-xl font-semibold text-gray-800">Loading Dashboard</h2>
 
-          <p className="text-gray-500 mt-2">Preparing your dashboard...</p>
+          <p className="text-gray-500 mt-2">Gathering your wellness insights...</p>
         </div>
       </div>
     );
