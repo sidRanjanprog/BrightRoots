@@ -9,8 +9,11 @@ const Dashboard = () => {
   const [children, setChildren] = useState([]);
   const [dashboardInsights, setDashboardInsights] = useState(null);
   const navigate = useNavigate();
+  const storedUser = localStorage.getItem("user");
 
+  const user = storedUser ? JSON.parse(storedUser) : null;
 
+  const firstName = user?.fullName?.split(" ")[0] || "Parent";
   const [formData, setFormData] = useState({
     name: "",
     age: "",
@@ -120,8 +123,13 @@ const Dashboard = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-4xl font-bold mb-8">Dashboard</h1>
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-gray-900">Welcome back, {firstName} 👋</h1>
 
+        <p className="mt-2 text-lg text-gray-500">
+          Here's an overview of your children's wellness.
+        </p>
+      </div>
       {/* Dashboard Insights */}
       {dashboardInsights && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
@@ -174,7 +182,6 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-
       {/* Your Children */}
       <div className="mt-10">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Your Children</h2>
@@ -221,7 +228,6 @@ const Dashboard = () => {
           </div>
         )}
       </div>
-
       {/* Add Child */}
       <div className="mt-10">
         <form
@@ -254,7 +260,7 @@ const Dashboard = () => {
             id="age"
             type="number"
             name="age"
-            placeholder="Enter age (1-18)"
+            placeholder="Enter age (1–18)"
             min="1"
             max="18"
             className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
