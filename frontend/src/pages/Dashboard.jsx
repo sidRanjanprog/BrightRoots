@@ -122,16 +122,114 @@ const Dashboard = () => {
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-4xl font-bold mb-8">Dashboard</h1>
 
+      {/* Your Children */}
+      {dashboardInsights && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          <div className="bg-blue-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
+            <div className="text-4xl mb-3">👶</div>
+            <h3 className="text-gray-600 font-medium">Total Children</h3>
+            <p className="text-5xl font-bold text-gray-900 mt-2">
+              {dashboardInsights.totalChildren}
+            </p>
+          </div>
+
+          <div className="bg-green-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
+            <div className="text-4xl mb-3">💚</div>
+            <h3 className="text-gray-600 font-medium">Average Wellness Score</h3>
+            <p className="text-5xl font-bold text-gray-900 mt-2">
+              {dashboardInsights.averageWellnessScore}
+            </p>
+          </div>
+
+          <div className="bg-red-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
+            <div className="text-4xl mb-3">⚠️</div>
+            <h3 className="text-gray-600 font-medium">Highest Risk Child</h3>
+            <p className="text-2xl font-bold text-gray-900 mt-2">
+              {dashboardInsights.highestRiskChild || "None"}
+            </p>
+          </div>
+
+          <div className="bg-yellow-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
+            <div className="text-4xl mb-3">📱</div>
+            <h3 className="text-gray-600 font-medium">Average Screen Time</h3>
+            <p className="text-5xl font-bold text-gray-900 mt-2">
+              {dashboardInsights.averageScreenTime} mins
+            </p>
+          </div>
+
+          <div className="bg-purple-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
+            <div className="text-4xl mb-3">😴</div>
+            <h3 className="text-gray-600 font-medium">Average Sleep</h3>
+            <p className="text-5xl font-bold text-gray-900 mt-2">
+              {dashboardInsights.averageSleep} hrs
+            </p>
+          </div>
+
+          <div className="bg-orange-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
+            <div className="text-4xl mb-3">⚽</div>
+            <h3 className="text-gray-600 font-medium">Average Outdoor Time</h3>
+            <p className="text-5xl font-bold text-gray-900 mt-2">
+              {dashboardInsights.averageOutdoorTime} mins
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Dashboard Insights */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Your Children</h2>
+
+        {children.length === 0 ? (
+          <div className="bg-white rounded-2xl shadow-md p-8 text-center border border-gray-100">
+            <p className="text-gray-500 text-lg">No children added yet.</p>
+
+            <p className="text-gray-400 mt-2">
+              Add your first child to begin tracking their wellness journey.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {children.map((child) => (
+              <div
+                key={child._id}
+                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 p-6"
+              >
+                <div className="flex flex-col items-center text-center">
+                  {/* Avatar */}
+                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-700 mb-4">
+                    {child.name.charAt(0).toUpperCase()}
+                  </div>
+
+                  {/* Name */}
+                  <h3 className="text-xl font-bold text-gray-800">{child.name}</h3>
+
+                  {/* Details */}
+                  <p className="text-gray-500 mt-2">
+                    {child.gender} • {child.age} Years
+                  </p>
+
+                  {/* Button */}
+                  <button
+                    onClick={() => navigate(`/dashboard/child/${child._id}`)}
+                    className="mt-6 w-full bg-blue-600 hover:enabled:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition-all duration-300 cursor-pointer"
+                  >
+                    View Profile →
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Add Child Form */}
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mb-8"
       >
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Child</h2>
 
-        <label
-          htmlFor="name"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
           Child Name
         </label>
         <input
@@ -144,10 +242,7 @@ const Dashboard = () => {
           onChange={handleChange}
         />
 
-        <label
-          htmlFor="age"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
+        <label htmlFor="age" className="block text-sm font-medium text-gray-700 mb-2">
           Age
         </label>
 
@@ -160,10 +255,7 @@ const Dashboard = () => {
           onChange={handleChange}
         />
 
-        <label
-          htmlFor="gender"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
+        <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
           Gender
         </label>
 
@@ -189,125 +281,6 @@ const Dashboard = () => {
           {isSubmitting ? "Adding..." : "Add Child"}
         </button>
       </form>
-
-      {dashboardInsights && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-
-          <div className="bg-blue-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
-            <div className="text-4xl mb-3">👶</div>
-            <h3 className="text-gray-600 font-medium">
-              Total Children
-            </h3>
-            <p className="text-5xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.totalChildren}
-            </p>
-          </div>
-
-          <div className="bg-green-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
-            <div className="text-4xl mb-3">💚</div>
-            <h3 className="text-gray-600 font-medium">
-              Average Wellness Score
-            </h3>
-            <p className="text-5xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.averageWellnessScore}
-            </p>
-          </div>
-
-          <div className="bg-red-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
-            <div className="text-4xl mb-3">⚠️</div>
-            <h3 className="text-gray-600 font-medium">
-              Highest Risk Child
-            </h3>
-            <p className="text-2xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.highestRiskChild || "None"}
-            </p>
-          </div>
-
-          <div className="bg-yellow-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
-            <div className="text-4xl mb-3">📱</div>
-            <h3 className="text-gray-600 font-medium">
-              Average Screen Time
-            </h3>
-            <p className="text-5xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.averageScreenTime} mins
-            </p>
-          </div>
-
-          <div className="bg-purple-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
-            <div className="text-4xl mb-3">😴</div>
-            <h3 className="text-gray-600 font-medium">
-              Average Sleep
-            </h3>
-            <p className="text-5xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.averageSleep} hrs
-            </p>
-          </div>
-
-          <div className="bg-orange-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
-            <div className="text-4xl mb-3">⚽</div>
-            <h3 className="text-gray-600 font-medium">
-              Average Outdoor Time
-            </h3>
-            <p className="text-5xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.averageOutdoorTime} mins
-            </p>
-          </div>
-
-        </div>
-      )}
-
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          Your Children
-        </h2>
-
-        {children.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-md p-8 text-center border border-gray-100">
-            <p className="text-gray-500 text-lg">
-              No children added yet.
-            </p>
-
-            <p className="text-gray-400 mt-2">
-              Add your first child to begin tracking their wellness journey.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {children.map((child) => (
-              <div
-                key={child._id}
-                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 p-6"
-              >
-                <div className="flex flex-col items-center text-center">
-
-                  {/* Avatar */}
-                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-700 mb-4">
-                    {child.name.charAt(0).toUpperCase()}
-                  </div>
-
-                  {/* Name */}
-                  <h3 className="text-xl font-bold text-gray-800">
-                    {child.name}
-                  </h3>
-
-                  {/* Details */}
-                  <p className="text-gray-500 mt-2">
-                    {child.gender} • {child.age} Years
-                  </p>
-
-                  {/* Button */}
-                  <button
-                    onClick={() => navigate(`/dashboard/child/${child._id}`)}
-                    className="mt-6 w-full bg-blue-600 hover:enabled:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition-all duration-300 cursor-pointer"
-                  >
-                    View Profile →
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 };

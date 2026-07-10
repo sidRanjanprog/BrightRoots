@@ -1,17 +1,13 @@
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-} from "chart.js";
-
+// React
 import { useEffect, useRef, useState } from "react";
+
+// React Router
 import { useParams } from "react-router-dom";
 
+// Third-party Libraries
+import { toast } from "react-toastify";
+
+// Services
 import { getChildById } from "../services/childService";
 
 import {
@@ -30,339 +26,90 @@ import {
   updateOutdoorActivity,
 } from "../services/outdoorActivityService";
 
-import ChildInfoCard from "../components/sections/ChildInfoCard";
-
 import { getRecommendations } from "../services/recommendationService";
-import RecommendationSection from "../components/sections/RecommendationSection";
+
+// Components
+import ChildInfoCard from "../components/sections/ChildInfoCard";
 import ScreenTimeSection from "../components/sections/ScreenTimeSection";
 import SleepSection from "../components/sections/SleepSection";
 import OutdoorSection from "../components/sections/OutdoorSection";
+import RecommendationSection from "../components/sections/RecommendationSection";
 
-import { toast } from "react-toastify";
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+// Utilities
+import { getScreenTimeChart, getSleepChart, getOutdoorChart } from "../utils/chartConfig";
 
 const ChildProfile = () => {
   const { id } = useParams();
 
+  // ==============================
+  // Child State
   const [child, setChild] = useState(null);
+  // ==============================
 
+  // ==============================
+  // Screen Time State
   const [screenTimes, setScreenTimes] = useState([]);
-
+  const [screenTimeLoading, setScreenTimeLoading] = useState(false);
   const [editingScreenTimeId, setEditingScreenTimeId] = useState(null);
-
   const [screenTimeData, setScreenTimeData] = useState({
     date: "",
     durationMinutes: "",
     activityType: "Educational",
   });
+  // ==============================
 
-  const screenTimeFormRef = useRef(null);
-
+  // ==============================
+  // Sleep State
   const [sleepRecords, setSleepRecords] = useState([]);
-
+  const [sleepLoading, setSleepLoading] = useState(false);
+  const [editingSleepId, setEditingSleepId] = useState(null);
   const [sleepData, setSleepData] = useState({
     date: "",
     sleepHours: "",
     sleepQuality: "Good",
   });
+  // ==============================
 
-  const sleepFormRef = useRef(null);
-
-  const [editingSleepId, setEditingSleepId] = useState(null);
-
+  // ==============================
+  // Outdoor Activity State
   const [outdoorActivities, setOutdoorActivities] = useState([]);
-
+  const [outdoorLoading, setOutdoorLoading] = useState(false);
+  const [editingOutdoorId, setEditingOutdoorId] = useState(null);
   const [outdoorData, setOutdoorData] = useState({
     date: "",
     activityType: "",
     durationMinutes: "",
   });
+  // ==============================
 
-  const outdoorFormRef = useRef(null);
-
-  const [editingOutdoorId, setEditingOutdoorId] = useState(null)
-
+  // ==============================
+  // Recommendation State
   const [recommendationData, setRecommendationData] = useState(null);
-
   const [recommendationLoading, setRecommendationLoading] = useState(false);
-
   const [recommendationError, setRecommendationError] = useState("");
-
-  const [screenTimeLoading, setScreenTimeLoading] = useState(false);
-
-  const [sleepLoading, setSleepLoading] = useState(false);
-
-  const [outdoorLoading, setOutdoorLoading] = useState(false);
-
-  const handleScreenTimeChange = (e) => {
-    setScreenTimeData({
-      ...screenTimeData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleDeleteScreenTime = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this record?");
-
-    if (!confirmed) {
-      return;
-    }
-    try {
-      await deleteScreenTime(id);
-
-      toast.success("Screen time deleted successfully!");
-
-      await fetchScreenTimes();
-    } catch (error) {
-      console.error(error);
-
-      toast.error(error.response?.data?.message || "Failed to delete screen time");
-    }
-  };
-
-  const handleSleepChange = (e) => {
-    setSleepData({
-      ...sleepData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleDeleteSleep = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this record?");
-
-    if (!confirmed) {
-      return;
-    }
-    try {
-      await deleteSleep(id);
-
-      toast.success("Sleep record deleted successfully!");
-
-      await fetchSleepRecords();
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || "Failed to delete sleep record");
-    }
-  };
-
-  const handleOutdoorChange = (e) => {
-    setOutdoorData({
-      ...outdoorData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleDeleteOutdoorActivity = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this record?");
-
-    if (!confirmed) {
-      return;
-    }
-    try {
-      await deleteOutdoorActivity(id);
-
-      toast.success("Outdoor activity deleted successfully!");
-
-      await fetchOutdoorActivities();
-    } catch (error) {
-      console.error(error);
-
-      toast.error(error.response?.data?.message || "Failed to delete outdoor activity");
-    }
-  };
-
-  const handleSleepSubmit = async (e) => {
-    e.preventDefault();
-
-    if (Number(sleepData.sleepHours) <= 0) {
-      toast.error("Sleep hours must be greater than 0");
-      return;
-    }
-
-    if (Number(sleepData.sleepHours) > 24) {
-      toast.error("Sleep hours cannot exceed 24");
-      return;
-    }
-
-    if (!sleepData.date) {
-      toast.error("Please select a date");
-      return;
-    }
-
-    const selectedDate = new Date(sleepData.date);
-
-    if (selectedDate > new Date()) {
-      toast.error("Future dates are not allowed");
-      return;
-    }
-
-    try {
-      setSleepLoading(true);
-      let response;
-
-      if (editingSleepId) {
-        response = await updateSleep(editingSleepId, sleepData);
-
-        setEditingSleepId(null);
-      } else {
-        response = await createSleep({
-          childId: child._id,
-          ...sleepData,
-        });
-      }
-
-      const isEditing = Boolean(editingSleepId);
-
-      toast.success(
-        isEditing ? "Sleep record updated successfully!" : "Sleep record saved successfully!"
-      );
-
-      await fetchSleepRecords();
-
-      setRecommendationData(null);
-      setRecommendationError("");
-
-      setSleepData({
-        date: "",
-        sleepHours: "",
-        sleepQuality: "Good",
-      });
-    } catch (error) {
-      console.error(error);
-
-      toast.error(error.response?.data?.message || "Failed to save sleep record");
-    } finally {
-      setSleepLoading(false);
-    }
-  };
-
-  const handleOutdoorSubmit = async (e) => {
-    e.preventDefault();
-
-    if (Number(outdoorData.durationMinutes) <= 0) {
-      toast.error("Duration must be greater than 0");
-      return;
-    }
-
-    if (!outdoorData.activityType.trim()) {
-      toast.error("Activity type is required");
-      return;
-    }
-
-    if (!outdoorData.date) {
-      toast.error("Please select a date");
-      return;
-    }
-
-    const selectedDate = new Date(outdoorData.date);
-
-    if (selectedDate > new Date()) {
-      toast.error("Future dates are not allowed");
-      return;
-    }
-
-    try {
-      setOutdoorLoading(true);
-      let response;
-
-      const isEditing = Boolean(editingOutdoorId);
-
-      if (editingOutdoorId) {
-        response = await updateOutdoorActivity(editingOutdoorId, outdoorData);
-
-        setEditingOutdoorId(null);
-      } else {
-        response = await createOutdoorActivity({
-          childId: child._id,
-          ...outdoorData,
-        });
-      }
-
-      toast.success(
-        isEditing
-          ? "Outdoor activity updated successfully!"
-          : "Outdoor activity saved successfully!"
-      );
-
-      await fetchOutdoorActivities();
-
-      setRecommendationData(null);
-      setRecommendationError("");
-
-      setOutdoorData({
-        date: "",
-        activityType: "",
-        durationMinutes: "",
-      });
-    } catch (error) {
-      console.error(error);
-
-      toast.error(error.response?.data?.message || "Failed to save outdoor activity");
-    } finally {
-      setOutdoorLoading(false);
-    }
-  };
-
-  const handleScreenTimeSubmit = async (e) => {
-    e.preventDefault();
-
-    if (Number(screenTimeData.durationMinutes) <= 0) {
-      toast.error("Screen time must be greater than 0");
-      return;
-    }
-
-    if (!screenTimeData.date) {
-      toast.error("Please select a date");
-      return;
-    }
-
-    const selectedDate = new Date(screenTimeData.date);
-
-    if (selectedDate > new Date()) {
-      toast.error("Future dates are not allowed");
-      return;
-    }
-
-    try {
-      setScreenTimeLoading(true);
-      let response;
-
-      const isEditing = Boolean(editingScreenTimeId);
-
-      if (editingScreenTimeId) {
-        response = await updateScreenTime(editingScreenTimeId, screenTimeData);
-
-        setEditingScreenTimeId(null);
-      } else {
-        response = await createScreenTime({
-          childId: child._id,
-          ...screenTimeData,
-        });
-      }
-
-      toast.success(
-        isEditing ? "Screen time updated successfully!" : "Screen time saved successfully!"
-      );
-
-      await fetchScreenTimes();
-      setRecommendationData(null);
-      setRecommendationError("");
-
-      setScreenTimeData({
-        date: "",
-        durationMinutes: "",
-        activityType: "Educational",
-      });
-    } catch (error) {
-      console.error(error);
-
-      toast.error(error.response?.data?.message || "Failed to save screen time");
-    } finally {
-      setScreenTimeLoading(false);
-    }
-  };
-
+  // ==============================
+
+  // ==============================
+  // Refs
+  const screenTimeFormRef = useRef(null);
+  const sleepFormRef = useRef(null);
+  const outdoorFormRef = useRef(null);
+  // ==============================
+
+  // ==============================
+  // Derived Data
+  const { chartData: screenTimeChartData, chartOptions: screenTimeChartOptions } =
+    getScreenTimeChart(screenTimes);
+
+  const { chartData: sleepChartData, chartOptions: sleepChartOptions } =
+    getSleepChart(sleepRecords);
+
+  const { chartData: outdoorChartData, chartOptions: outdoorChartOptions } =
+    getOutdoorChart(outdoorActivities);
+  // ==============================
+
+  // ==============================
+  // Fetch Functions
   const fetchChild = async () => {
     try {
       const data = await getChildById(id);
@@ -420,13 +167,282 @@ const ChildProfile = () => {
       setRecommendationLoading(false);
     }
   };
+  // ==============================
 
+  // ==============================
+  // Screen Time Handlers
+  const handleScreenTimeChange = (e) => {
+    setScreenTimeData({
+      ...screenTimeData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleScreenTimeSubmit = async (e) => {
+    e.preventDefault();
+
+    if (Number(screenTimeData.durationMinutes) <= 0) {
+      toast.error("Screen time must be greater than 0");
+      return;
+    }
+
+    if (!screenTimeData.date) {
+      toast.error("Please select a date");
+      return;
+    }
+
+    const selectedDate = new Date(screenTimeData.date);
+
+    if (selectedDate > new Date()) {
+      toast.error("Future dates are not allowed");
+      return;
+    }
+
+    try {
+      setScreenTimeLoading(true);
+
+      const isEditing = Boolean(editingScreenTimeId);
+
+      if (editingScreenTimeId) {
+        await updateScreenTime(editingScreenTimeId, screenTimeData);
+
+        setEditingScreenTimeId(null);
+      } else {
+        await createScreenTime({
+          childId: child._id,
+          ...screenTimeData,
+        });
+      }
+
+      toast.success(
+        isEditing ? "Screen time updated successfully!" : "Screen time saved successfully!"
+      );
+
+      await fetchScreenTimes();
+      setRecommendationData(null);
+      setRecommendationError("");
+
+      setScreenTimeData({
+        date: "",
+        durationMinutes: "",
+        activityType: "Educational",
+      });
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.response?.data?.message || "Failed to save screen time");
+    } finally {
+      setScreenTimeLoading(false);
+    }
+  };
+  const handleDeleteScreenTime = async (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete this record?");
+
+    if (!confirmed) {
+      return;
+    }
+    try {
+      await deleteScreenTime(id);
+
+      toast.success("Screen time deleted successfully!");
+
+      await fetchScreenTimes();
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.response?.data?.message || "Failed to delete screen time");
+    }
+  };
+  // ==============================
+
+  // ==============================
+  // Sleep Handlers
+  const handleSleepChange = (e) => {
+    setSleepData({
+      ...sleepData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleSleepSubmit = async (e) => {
+    e.preventDefault();
+
+    if (Number(sleepData.sleepHours) <= 0) {
+      toast.error("Sleep hours must be greater than 0");
+      return;
+    }
+
+    if (Number(sleepData.sleepHours) > 24) {
+      toast.error("Sleep hours cannot exceed 24");
+      return;
+    }
+
+    if (!sleepData.date) {
+      toast.error("Please select a date");
+      return;
+    }
+
+    const selectedDate = new Date(sleepData.date);
+
+    if (selectedDate > new Date()) {
+      toast.error("Future dates are not allowed");
+      return;
+    }
+
+    try {
+      setSleepLoading(true);
+      const isEditing = Boolean(editingSleepId);
+
+      if (editingSleepId) {
+        await updateSleep(editingSleepId, sleepData);
+
+        setEditingSleepId(null);
+      } else {
+        await createSleep({
+          childId: child._id,
+          ...sleepData,
+        });
+      }
+
+      toast.success(
+        isEditing ? "Sleep record updated successfully!" : "Sleep record saved successfully!"
+      );
+
+      await fetchSleepRecords();
+
+      setRecommendationData(null);
+      setRecommendationError("");
+
+      setSleepData({
+        date: "",
+        sleepHours: "",
+        sleepQuality: "Good",
+      });
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.response?.data?.message || "Failed to save sleep record");
+    } finally {
+      setSleepLoading(false);
+    }
+  };
+  const handleDeleteSleep = async (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete this record?");
+
+    if (!confirmed) {
+      return;
+    }
+    try {
+      await deleteSleep(id);
+
+      toast.success("Sleep record deleted successfully!");
+
+      await fetchSleepRecords();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to delete sleep record");
+    }
+  };
+  // ==============================
+  // Outdoor Activity Handlers
+  const handleOutdoorChange = (e) => {
+    setOutdoorData({
+      ...outdoorData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleOutdoorSubmit = async (e) => {
+    e.preventDefault();
+
+    if (Number(outdoorData.durationMinutes) <= 0) {
+      toast.error("Duration must be greater than 0");
+      return;
+    }
+
+    if (!outdoorData.activityType.trim()) {
+      toast.error("Activity type is required");
+      return;
+    }
+
+    if (!outdoorData.date) {
+      toast.error("Please select a date");
+      return;
+    }
+
+    const selectedDate = new Date(outdoorData.date);
+
+    if (selectedDate > new Date()) {
+      toast.error("Future dates are not allowed");
+      return;
+    }
+
+    try {
+      setOutdoorLoading(true);
+
+      const isEditing = Boolean(editingOutdoorId);
+
+      if (editingOutdoorId) {
+        await updateOutdoorActivity(editingOutdoorId, outdoorData);
+
+        setEditingOutdoorId(null);
+      } else {
+        await createOutdoorActivity({
+          childId: child._id,
+          ...outdoorData,
+        });
+      }
+
+      toast.success(
+        isEditing
+          ? "Outdoor activity updated successfully!"
+          : "Outdoor activity saved successfully!"
+      );
+
+      await fetchOutdoorActivities();
+
+      setRecommendationData(null);
+      setRecommendationError("");
+
+      setOutdoorData({
+        date: "",
+        activityType: "",
+        durationMinutes: "",
+      });
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.response?.data?.message || "Failed to save outdoor activity");
+    } finally {
+      setOutdoorLoading(false);
+    }
+  };
+  const handleDeleteOutdoorActivity = async (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete this record?");
+
+    if (!confirmed) {
+      return;
+    }
+    try {
+      await deleteOutdoorActivity(id);
+
+      toast.success("Outdoor activity deleted successfully!");
+
+      await fetchOutdoorActivities();
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.response?.data?.message || "Failed to delete outdoor activity");
+    }
+  };
+  // ==============================
+
+  // ==============================
+  // Effects
   useEffect(() => {
     fetchChild();
     fetchScreenTimes();
     fetchSleepRecords();
     fetchOutdoorActivities();
   }, [id]);
+  // ==============================
 
   if (!child) {
     return (
@@ -437,239 +453,6 @@ const ChildProfile = () => {
       </div>
     );
   }
-
-  const sortedScreenTimes = [...screenTimes].sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  const screenTimeChartData = {
-    labels: sortedScreenTimes.map((record) =>
-      new Date(record.date).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-      })
-    ),
-
-    datasets: [
-      {
-        label: "Screen Time",
-        data: sortedScreenTimes.map((record) => record.durationMinutes),
-
-        borderColor: "rgb(59,130,246)",
-        backgroundColor: "rgb(59,130,246)",
-
-        borderWidth: 3,
-
-        pointRadius: 5,
-        pointHoverRadius: 7,
-
-        pointBackgroundColor: "rgb(59,130,246)",
-        pointBorderColor: "#ffffff",
-        pointBorderWidth: 2,
-
-        tension: 0.35,
-
-        fill: false,
-      },
-    ],
-  };
-
-  const screenTimeChartOptions = {
-    responsive: true,
-
-    maintainAspectRatio: false,
-
-    plugins: {
-      legend: {
-        display: false,
-      },
-
-      tooltip: {
-        callbacks: {
-          label: (context) => `${context.parsed.y} mins`,
-        },
-      },
-    },
-
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-
-        ticks: {
-          color: "#6B7280",
-        },
-      },
-
-      y: {
-        beginAtZero: true,
-
-        ticks: {
-          stepSize: 20,
-          color: "#6B7280",
-        },
-
-        grid: {
-          color: "#E5E7EB",
-        },
-      },
-    },
-  };
-
-  const sortedSleepRecords = [...sleepRecords].sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  const sleepChartData = {
-    labels: sortedSleepRecords.map((record) =>
-      new Date(record.date).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-      })
-    ),
-
-    datasets: [
-      {
-        label: "Sleep",
-        data: sortedSleepRecords.map((record) => record.sleepHours),
-
-        borderColor: "rgb(59,130,246)",
-        backgroundColor: "rgb(59,130,246)",
-
-        borderWidth: 3,
-
-        pointRadius: 5,
-        pointHoverRadius: 7,
-
-        pointBackgroundColor: "rgb(59,130,246)",
-        pointBorderColor: "#ffffff",
-        pointBorderWidth: 2,
-
-        tension: 0.35,
-
-        fill: false,
-      },
-    ],
-  };
-
-  const sleepChartOptions = {
-    responsive: true,
-
-    maintainAspectRatio: false,
-
-    plugins: {
-      legend: {
-        display: false,
-      },
-
-      tooltip: {
-        callbacks: {
-          label: (context) => `${context.parsed.y} hours`,
-        },
-      },
-    },
-
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-
-        ticks: {
-          color: "#6B7280",
-        },
-      },
-
-      y: {
-        beginAtZero: true,
-
-        ticks: {
-          stepSize: 1,
-          color: "#6B7280",
-        },
-
-        grid: {
-          color: "#E5E7EB",
-        },
-      },
-    },
-  };
-
-  const sortedOutdoorActivities = [...outdoorActivities].sort(
-    (a, b) => new Date(a.date) - new Date(b.date)
-  );
-
-  const outdoorChartData = {
-    labels: sortedOutdoorActivities.map((record) =>
-      new Date(record.date).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-      })
-    ),
-
-    datasets: [
-      {
-        label: "Outdoor Activity",
-        data: sortedOutdoorActivities.map((record) => record.durationMinutes),
-
-        borderColor: "rgb(59,130,246)",
-        backgroundColor: "rgb(59,130,246)",
-
-        borderWidth: 3,
-
-        pointRadius: 5,
-        pointHoverRadius: 7,
-
-        pointBackgroundColor: "rgb(59,130,246)",
-        pointBorderColor: "#ffffff",
-        pointBorderWidth: 2,
-
-        tension: 0.25,
-
-        fill: false,
-      },
-    ],
-  };
-
-  const outdoorChartOptions = {
-    responsive: true,
-
-    maintainAspectRatio: false,
-
-    plugins: {
-      legend: {
-        display: false,
-      },
-
-      tooltip: {
-        callbacks: {
-          label: (context) => `${context.parsed.y} mins`,
-        },
-      },
-    },
-
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-
-        ticks: {
-          color: "#6B7280",
-        },
-      },
-
-      y: {
-        beginAtZero: true,
-
-        ticks: {
-          stepSize: 20,
-          color: "#6B7280",
-        },
-
-        grid: {
-          color: "#E5E7EB",
-        },
-      },
-    },
-  };
 
   const riskBadgeStyles = {
     Low: "bg-green-100 text-green-700",
@@ -683,6 +466,8 @@ const ChildProfile = () => {
     High: "🔴",
   };
 
+  // ==============================
+  // Recommendation Helpers
   const getRecommendationStyle = (text) => {
     const value = text.toLowerCase();
 
@@ -745,7 +530,10 @@ const ChildProfile = () => {
       card: "bg-green-50",
     };
   };
+  // ==============================
 
+  // ==============================
+  // Render
   return (
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-4xl font-bold mb-8">Child Profile</h1>
@@ -809,5 +597,7 @@ const ChildProfile = () => {
     </div>
   );
 };
+  // ==============================
+
 
 export default ChildProfile;
