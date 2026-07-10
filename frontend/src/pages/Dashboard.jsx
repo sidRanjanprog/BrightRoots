@@ -122,7 +122,7 @@ const Dashboard = () => {
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-4xl font-bold mb-8">Dashboard</h1>
 
-      {/* Your Children */}
+      {/* Dashboard Insights */}
       {dashboardInsights && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           <div className="bg-blue-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
@@ -175,8 +175,8 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Dashboard Insights */}
-      <div className="mt-8">
+      {/* Your Children */}
+      <div className="mt-10">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Your Children</h2>
 
         {children.length === 0 ? (
@@ -222,65 +222,73 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Add Child Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mb-8"
-      >
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Child</h2>
-
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-          Child Name
-        </label>
-        <input
-          id="name"
-          type="text"
-          name="name"
-          placeholder="Enter child's name"
-          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-          value={formData.name}
-          onChange={handleChange}
-        />
-
-        <label htmlFor="age" className="block text-sm font-medium text-gray-700 mb-2">
-          Age
-        </label>
-
-        <input
-          id="age"
-          type="number"
-          name="age"
-          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-          value={formData.age}
-          onChange={handleChange}
-        />
-
-        <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
-          Gender
-        </label>
-
-        <select
-          id="gender"
-          name="gender"
-          className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-          value={formData.gender}
-          onChange={handleChange}
+      {/* Add Child */}
+      <div className="mt-10">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl shadow-md border border-gray-100 p-6"
         >
-          <option value="">Select Gender</option>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Child</h2>
+          <p className="text-gray-500 mt-2 mb-6">
+            Create a child profile to begin tracking their wellness and daily activities.
+          </p>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            Child Name
+          </label>
 
-          <option value="Male">Male</option>
+          <input
+            id="name"
+            type="text"
+            name="name"
+            placeholder="Enter child's name"
+            className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            value={formData.name}
+            onChange={handleChange}
+          />
 
-          <option value="Female">Female</option>
-        </select>
+          <label htmlFor="age" className="block text-sm font-medium text-gray-700 mb-2">
+            Age
+          </label>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="bg-green-600 hover:enabled:bg-green-700 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? "Adding..." : "Add Child"}
-        </button>
-      </form>
+          <input
+            id="age"
+            type="number"
+            name="age"
+            placeholder="Enter age (1-18)"
+            min="1"
+            max="18"
+            className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            value={formData.age}
+            onChange={handleChange}
+          />
+
+          <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
+            Gender
+          </label>
+
+          <select
+            id="gender"
+            name="gender"
+            className="w-full rounded-xl border border-gray-300 px-4 py-3 mb-4 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            value={formData.gender}
+            onChange={handleChange}
+          >
+            <option value="">Select Gender</option>
+
+            <option value="Male">Male</option>
+
+            <option value="Female">Female</option>
+          </select>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-green-600 hover:enabled:bg-green-700 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? "Adding..." : "Add Child"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
