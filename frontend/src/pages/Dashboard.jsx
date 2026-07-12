@@ -1,54 +1,38 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getChildren, createChild } from "../services/childService";
+import { createChild, getChildren } from "../services/childService";
 
-import { getDashboardInsights } from "../services/recommendationService";
 import { toast } from "react-toastify";
+import { getDashboardInsights } from "../services/recommendationService";
 
 const Dashboard = () => {
+  // Navigation
+  const navigate = useNavigate();
+
+  // Logged-in User
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  const firstName = user?.fullName?.split(" ")[0] || "Parent";
+
+  // State
   const [children, setChildren] = useState([]);
   const [dashboardInsights, setDashboardInsights] = useState(null);
-  const navigate = useNavigate();
-  const storedUser = localStorage.getItem("user");
 
-  const user = storedUser ? JSON.parse(storedUser) : null;
-
-  const firstName = user?.fullName?.split(" ")[0] || "Parent";
   const [formData, setFormData] = useState({
     name: "",
     age: "",
     gender: "",
   });
 
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Event Handlers
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-  };
-
-  const [loading, setLoading] = useState(true);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const fetchChildren = async () => {
-    try {
-      const data = await getChildren();
-
-      setChildren(data.children);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchDashboardInsights = async () => {
-    try {
-      const data = await getDashboardInsights();
-
-      setDashboardInsights(data);
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -71,6 +55,7 @@ const Dashboard = () => {
         toast.error("Please select a gender");
         return;
       }
+
       await createChild(formData);
 
       toast.success("Child added successfully!");
@@ -88,21 +73,47 @@ const Dashboard = () => {
     } finally {
       setIsSubmitting(false);
     }
-    };
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    navigate("/");
+  };
+
+  // Data Fetching
+  const fetchChildren = async () => {
+    try {
+      const data = await getChildren();
+
+      setChildren(data.children);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchDashboardInsights = async () => {
+    try {
+      const data = await getDashboardInsights();
+
+      setDashboardInsights(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const initializeDashboard = async () => {
     setLoading(true);
 
     try {
-      await Promise.all([
-        fetchChildren(),
-        fetchDashboardInsights(),
-      ]);
+      await Promise.all([fetchChildren(), fetchDashboardInsights()]);
     } finally {
       setLoading(false);
     }
   };
 
+  // Effects
   useEffect(() => {
     initializeDashboard();
   }, []);
@@ -123,12 +134,20 @@ const Dashboard = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900">Welcome back, {firstName} 👋</h1>
+      <div className="flex items-start justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-4xl font-bold text-gray-900">Welcome back, {firstName} 👋</h1>
 
-        <p className="mt-2 text-lg text-gray-500">
-          Here's an overview of your children's wellness.
-        </p>
+          <p className="mt-2 text-lg text-gray-500">
+            Here's an overview of your children's wellness.
+          </p>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="border border-gray-300 bg-white px-5 py-2.5 rounded-xl text-gray-700 font-medium transition-all duration-300 hover:border-red-300 hover:bg-red-50 hover:text-red-600 cursor-pointer"
+        >
+          Logout
+        </button>
       </div>
       {/* Dashboard Insights */}
       {dashboardInsights && (
@@ -297,6 +316,6 @@ const Dashboard = () => {
       </div>
     </div>
   );
-};
+};;
 
 export default Dashboard;

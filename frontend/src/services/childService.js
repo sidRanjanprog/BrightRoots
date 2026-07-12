@@ -35,3 +35,15 @@ export const createChild = async (childData) => {
 
   return response.data;
 };
+
+export const updateChild = async (childId, childData) => {
+  const token = localStorage.getItem("token");
+
+  const response = await api.put(`/children/${childId}`, childData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};

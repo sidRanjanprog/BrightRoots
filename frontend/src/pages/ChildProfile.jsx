@@ -26,17 +26,19 @@ import {
   updateOutdoorActivity,
 } from "../services/outdoorActivityService";
 
+import EditChildForm from "../components/forms/EditChildForm";
+
 import { getRecommendations } from "../services/recommendationService";
 
 // Components
 import ChildInfoCard from "../components/sections/ChildInfoCard";
-import ScreenTimeSection from "../components/sections/ScreenTimeSection";
-import SleepSection from "../components/sections/SleepSection";
 import OutdoorSection from "../components/sections/OutdoorSection";
 import RecommendationSection from "../components/sections/RecommendationSection";
+import ScreenTimeSection from "../components/sections/ScreenTimeSection";
+import SleepSection from "../components/sections/SleepSection";
 
 // Utilities
-import { getScreenTimeChart, getSleepChart, getOutdoorChart } from "../utils/chartConfig";
+import { getOutdoorChart, getScreenTimeChart, getSleepChart } from "../utils/chartConfig";
 
 const ChildProfile = () => {
   const { id } = useParams();
@@ -44,6 +46,7 @@ const ChildProfile = () => {
   // ==============================
   // Child State
   const [child, setChild] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   // ==============================
 
   // ==============================
@@ -118,6 +121,12 @@ const ChildProfile = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleUpdateSuccess = async () => {
+    await fetchChild();
+
+    setIsEditing(false);
   };
 
   const fetchScreenTimes = async () => {
@@ -536,9 +545,28 @@ const ChildProfile = () => {
   // Render
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-4xl font-bold mb-8">Child Profile</h1>
+      <div className="flex items-start justify-between mb-8">
+        <h1 className="text-4xl font-bold">Child Profile</h1>
 
-      <ChildInfoCard child={child} />
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="border border-gray-300 bg-white px-5 py-2.5 rounded-xl text-gray-700 font-medium transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 cursor-pointer"
+          >
+            Edit Child
+          </button>
+        )}
+      </div>
+
+      {isEditing ? (
+        <EditChildForm
+          child={child}
+          onCancel={() => setIsEditing(false)}
+          onSuccess={handleUpdateSuccess}
+        />
+      ) : (
+        <ChildInfoCard child={child} />
+      )}
 
       <ScreenTimeSection
         screenTimeData={screenTimeData}
@@ -597,7 +625,6 @@ const ChildProfile = () => {
     </div>
   );
 };
-  // ==============================
-
+// ==============================
 
 export default ChildProfile;

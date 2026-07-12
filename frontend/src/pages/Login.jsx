@@ -109,7 +109,6 @@ const Login = () => {
             value={formData.password}
             onChange={handleChange}
             autoComplete="current-password"
-            minLength={8}
             spellCheck={false}
             required
             className="w-full rounded-xl border border-gray-300 px-4 py-4 pr-12 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
