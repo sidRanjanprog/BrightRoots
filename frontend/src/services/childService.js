@@ -47,3 +47,15 @@ export const updateChild = async (childId, childData) => {
 
   return response.data;
 };
+
+export const deleteChild = async (childId) => {
+  const token = localStorage.getItem("token");
+
+  const response = await api.delete(`/children/${childId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};

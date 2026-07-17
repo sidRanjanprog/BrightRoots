@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 
 // React Router
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 // Third-party Libraries
 import { toast } from "react-toastify";
@@ -27,6 +27,9 @@ import {
 } from "../services/outdoorActivityService";
 
 import EditChildForm from "../components/forms/EditChildForm";
+import { deleteChild } from "../services/childService";
+
+import DeleteChildModal from "../components/modals/DeleteChildModal";
 
 import { getRecommendations } from "../services/recommendationService";
 
@@ -42,11 +45,14 @@ import { getOutdoorChart, getScreenTimeChart, getSleepChart } from "../utils/cha
 
 const ChildProfile = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // ==============================
   // Child State
   const [child, setChild] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   // ==============================
 
   // ==============================
@@ -127,6 +133,26 @@ const ChildProfile = () => {
     await fetchChild();
 
     setIsEditing(false);
+  };
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+
+      await deleteChild(child._id);
+
+      toast.success("Child deleted successfully!");
+
+      setShowDeleteModal(false);
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.response?.data?.message || "Failed to delete child");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const fetchScreenTimes = async () => {
@@ -549,12 +575,21 @@ const ChildProfile = () => {
         <h1 className="text-4xl font-bold">Child Profile</h1>
 
         {!isEditing && (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="border border-gray-300 bg-white px-5 py-2.5 rounded-xl text-gray-700 font-medium transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 cursor-pointer"
-          >
-            Edit Child
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setIsEditing(true)}
+              className="border border-gray-300 bg-white px-5 py-2.5 rounded-xl text-gray-700 font-medium transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 cursor-pointer"
+            >
+              Edit Child
+            </button>
+
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="border border-red-300 bg-white px-5 py-2.5 rounded-xl text-red-600 font-medium transition-all duration-300 hover:bg-red-50 hover:border-red-400 cursor-pointer"
+            >
+              Delete Child
+            </button>
+          </div>
         )}
       </div>
 
@@ -612,6 +647,15 @@ const ChildProfile = () => {
         outdoorChartData={outdoorChartData}
         outdoorChartOptions={outdoorChartOptions}
       />
+
+      {showDeleteModal && (
+        <DeleteChildModal
+          child={child}
+          isDeleting={isDeleting}
+          onCancel={() => setShowDeleteModal(false)}
+          onDelete={handleDelete}
+        />
+      )}
 
       <RecommendationSection
         recommendationData={recommendationData}
