@@ -21,3 +21,46 @@ Modern lifestyles have significantly increased children's screen exposure while 
 Parents often lack a simple way to monitor these lifestyle factors together and understand their combined impact on their child's overall well-being.
 
 AnkurPath addresses this challenge by providing one centralized platform for tracking healthy habits and generating evidence-informed wellness recommendations.
+
+---
+
+## ✨ Features
+
+### 👤 Authentication
+- User Registration
+- User Login
+- JWT-based Authentication
+- Protected Routes
+
+### 👶 Child Management
+- Add Child Profile
+- Edit Child Profile
+- Delete Child Profile
+- View Child Information
+
+### 📱 Screen Time Tracking
+- Record Daily Screen Time
+- View Screen Time History
+- Visualize Trends with Charts
+
+### 😴 Sleep Tracking
+- Record Daily Sleep Duration
+- View Sleep History
+- Sleep Analytics Charts
+
+### 🌳 Outdoor Activity Tracking
+- Record Outdoor Activity Duration
+- View Activity History
+- Outdoor Activity Charts
+
+### 🧠 Recommendation Engine
+- Wellness Score Calculation
+- Risk Level Assessment
+- Personalized Recommendations
+- Data Availability Warnings
+
+### 📊 Dashboard
+- Parent Dashboard
+- Overall Wellness Insights
+- Child Summary Cards
+- Highest Risk Child Indicator
