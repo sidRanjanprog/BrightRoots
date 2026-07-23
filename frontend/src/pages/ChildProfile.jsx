@@ -639,7 +639,7 @@ const ChildProfile = () => {
         isDeleting={isDeletingScreenTime}
       />
 
-      <SleepSection
+      {/* <SleepSection
         sleepData={sleepData}
         sleepLoading={sleepLoading}
         editingSleepId={editingSleepId}
@@ -702,7 +702,7 @@ const ChildProfile = () => {
         riskBadgeStyles={riskBadgeStyles}
         riskIcons={riskIcons}
         getRecommendationStyle={getRecommendationStyle}
-      />
+      /> */}
     </div>
   );
 };
