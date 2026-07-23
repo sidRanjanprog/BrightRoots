@@ -4,14 +4,14 @@ import { createChild, getChildren } from "../services/childService";
 
 import { toast } from "react-toastify";
 import { getDashboardInsights } from "../services/recommendationService";
+import { useAuth } from "../hooks/useAuth";
 
 const Dashboard = () => {
   // Navigation
   const navigate = useNavigate();
 
   // Logged-in User
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
+  const { user, logout } = useAuth();
   const firstName = user?.fullName?.split(" ")[0] || "Parent";
 
   // State
@@ -76,10 +76,8 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    navigate("/");
+    logout();
+    navigate("/", { replace: true });
   };
 
   // Data Fetching
@@ -133,15 +131,18 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <div className="flex items-start justify-between gap-4 mb-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900">Welcome back, {firstName} 👋</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
+            Welcome back, {firstName} 👋
+          </h1>
 
           <p className="mt-2 text-lg text-gray-500">
             Here's an overview of your children's wellness.
           </p>
         </div>
+
         <button
           onClick={handleLogout}
           className="border border-gray-300 bg-white px-5 py-2.5 rounded-xl text-gray-700 font-medium transition-all duration-300 hover:border-red-300 hover:bg-red-50 hover:text-red-600 cursor-pointer"
@@ -163,40 +164,66 @@ const Dashboard = () => {
           <div className="bg-green-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
             <div className="text-4xl mb-3">💚</div>
             <h3 className="text-gray-600 font-medium">Average Wellness Score</h3>
-            <p className="text-5xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.averageWellnessScore}
+            <p
+              className={`mt-2 font-bold text-gray-900 ${
+                dashboardInsights.averageWellnessScore !== null ? "text-5xl" : "text-xl"
+              }`}
+            >
+              {dashboardInsights.averageWellnessScore ?? "No data"}
             </p>
           </div>
 
           <div className="bg-red-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
             <div className="text-4xl mb-3">⚠️</div>
             <h3 className="text-gray-600 font-medium">Highest Risk Child</h3>
-            <p className="text-2xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.highestRiskChild || "None"}
+            <p
+              className={`mt-2 font-bold text-gray-900 ${
+                dashboardInsights.highestRiskChild !== null ? "text-2xl" : "text-lg"
+              }`}
+            >
+              {dashboardInsights.highestRiskChild ?? "No comparison available"}
             </p>
           </div>
 
           <div className="bg-yellow-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
             <div className="text-4xl mb-3">📱</div>
             <h3 className="text-gray-600 font-medium">Average Screen Time</h3>
-            <p className="text-5xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.averageScreenTime} mins
+            <p
+              className={`mt-2 font-bold text-gray-900 ${
+                dashboardInsights.averageScreenTime !== null ? "text-5xl" : "text-xl"
+              }`}
+            >
+              {dashboardInsights.averageScreenTime !== null
+                ? `${dashboardInsights.averageScreenTime} mins`
+                : "No data"}
             </p>
           </div>
 
           <div className="bg-purple-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
             <div className="text-4xl mb-3">😴</div>
             <h3 className="text-gray-600 font-medium">Average Sleep</h3>
-            <p className="text-5xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.averageSleep} hrs
+            <p
+              className={`mt-2 font-bold text-gray-900 ${
+                dashboardInsights.averageSleep !== null ? "text-5xl" : "text-xl"
+              }`}
+            >
+              {dashboardInsights.averageSleep !== null
+                ? `${dashboardInsights.averageSleep} hrs`
+                : "No data"}
             </p>
           </div>
 
           <div className="bg-orange-50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[180px] text-center flex flex-col justify-center">
             <div className="text-4xl mb-3">⚽</div>
             <h3 className="text-gray-600 font-medium">Average Outdoor Time</h3>
-            <p className="text-5xl font-bold text-gray-900 mt-2">
-              {dashboardInsights.averageOutdoorTime} mins
+            <p
+              className={`mt-2 font-bold text-gray-900 ${
+                dashboardInsights.averageOutdoorTime !== null ? "text-5xl" : "text-xl"
+              }`}
+            >
+              {dashboardInsights.averageOutdoorTime !== null
+                ? `${dashboardInsights.averageOutdoorTime} mins`
+                : "No data"}
             </p>
           </div>
         </div>

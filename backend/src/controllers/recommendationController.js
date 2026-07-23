@@ -103,10 +103,10 @@ const getDashboardInsights = async (req, res) => {
       return res.status(200).json({
         success: true,
         totalChildren: 0,
-        averageWellnessScore: 0,
-        averageScreenTime: 0,
-        averageSleep: 0,
-        averageOutdoorTime: 0,
+        averageWellnessScore: null,
+        averageScreenTime: null,
+        averageSleep: null,
+        averageOutdoorTime: null,
         highestRiskChild: null,
       });
     }
@@ -115,6 +115,9 @@ const getDashboardInsights = async (req, res) => {
     let totalScreenTime = 0;
     let totalSleep = 0;
     let totalOutdoorTime = 0;
+
+    // Count only children who have activity data
+    let childrenWithData = 0;
 
     let highestRiskChild = null;
     let highestRiskLevel = -1;
@@ -131,6 +134,17 @@ const getDashboardInsights = async (req, res) => {
       const outdoorActivities = await OutdoorActivity.find({
         child: child._id,
       });
+
+      // Check whether this child has any activity data
+      const hasAnyData =
+        screenTimes.length > 0 ||
+        sleepRecords.length > 0 ||
+        outdoorActivities.length > 0;
+
+      // Ignore children with no activity records
+      if (!hasAnyData) {
+        continue;
+      }
 
       const avgScreenTime =
         screenTimes.length > 0
@@ -154,35 +168,30 @@ const getDashboardInsights = async (req, res) => {
 
       const analysis = generateRecommendations({
         screenTimeMinutes: avgScreenTime,
-
         sleepHours: avgSleep,
-
         outdoorMinutes: avgOutdoorTime,
 
         hasScreenData: screenTimes.length > 0,
-
         hasSleepData: sleepRecords.length > 0,
-
         hasOutdoorData: outdoorActivities.length > 0,
       });
 
+      // Count only children with activity data
+      childrenWithData++;
+
       totalWellnessScore += analysis.wellnessScore;
-
       totalScreenTime += avgScreenTime;
-
       totalSleep += avgSleep;
-
       totalOutdoorTime += avgOutdoorTime;
 
       const riskMap = {
         Low: 1,
-        Medium: 2,
+        Moderate: 2,
         High: 3,
       };
 
       if (riskMap[analysis.riskLevel] > highestRiskLevel) {
         highestRiskLevel = riskMap[analysis.riskLevel];
-
         highestRiskChild = child.name;
       }
     }
@@ -192,15 +201,18 @@ const getDashboardInsights = async (req, res) => {
 
       totalChildren: children.length,
 
-      averageWellnessScore: (totalWellnessScore / children.length).toFixed(1),
+      averageWellnessScore:
+        childrenWithData > 0 ? (totalWellnessScore / childrenWithData).toFixed(1) : null,
 
-      averageScreenTime: (totalScreenTime / children.length).toFixed(1),
+      averageScreenTime:
+        childrenWithData > 0 ? (totalScreenTime / childrenWithData).toFixed(1) : null,
 
-      averageSleep: (totalSleep / children.length).toFixed(1),
+      averageSleep: childrenWithData > 0 ? (totalSleep / childrenWithData).toFixed(1) : null,
 
-      averageOutdoorTime: (totalOutdoorTime / children.length).toFixed(1),
+      averageOutdoorTime:
+        childrenWithData > 0 ? (totalOutdoorTime / childrenWithData).toFixed(1) : null,
 
-      highestRiskChild,
+      highestRiskChild: childrenWithData >= 2 ? highestRiskChild : null,
     });
   } catch (error) {
     console.error(error);

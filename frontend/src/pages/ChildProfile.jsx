@@ -29,7 +29,7 @@ import {
 import EditChildForm from "../components/forms/EditChildForm";
 import { deleteChild } from "../services/childService";
 
-import DeleteChildModal from "../components/modals/DeleteChildModal";
+import ConfirmationModal from "../components/modals/ConfirmationModal";
 
 import { getRecommendations } from "../services/recommendationService";
 
@@ -65,6 +65,9 @@ const ChildProfile = () => {
     durationMinutes: "",
     activityType: "Educational",
   });
+  const [showScreenTimeDeleteModal, setShowScreenTimeDeleteModal] = useState(false);
+  const [selectedScreenTimeId, setSelectedScreenTimeId] = useState(null);
+  const [isDeletingScreenTime, setIsDeletingScreenTime] = useState(false);
   // ==============================
 
   // ==============================
@@ -77,6 +80,9 @@ const ChildProfile = () => {
     sleepHours: "",
     sleepQuality: "Good",
   });
+  const [showSleepDeleteModal, setShowSleepDeleteModal] = useState(false);
+  const [selectedSleepId, setSelectedSleepId] = useState(null);
+  const [isDeletingSleep, setIsDeletingSleep] = useState(false);
   // ==============================
 
   // ==============================
@@ -89,6 +95,9 @@ const ChildProfile = () => {
     activityType: "",
     durationMinutes: "",
   });
+  const [showOutdoorDeleteModal, setShowOutdoorDeleteModal] = useState(false);
+  const [selectedOutdoorId, setSelectedOutdoorId] = useState(null);
+  const [isDeletingOutdoor, setIsDeletingOutdoor] = useState(false);
   // ==============================
 
   // ==============================
@@ -269,22 +278,24 @@ const ChildProfile = () => {
       setScreenTimeLoading(false);
     }
   };
-  const handleDeleteScreenTime = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this record?");
-
-    if (!confirmed) {
-      return;
-    }
+  const handleDeleteScreenTime = async () => {
     try {
-      await deleteScreenTime(id);
+      setIsDeletingScreenTime(true);
+
+      await deleteScreenTime(selectedScreenTimeId);
 
       toast.success("Screen time deleted successfully!");
+
+      setShowScreenTimeDeleteModal(false);
+      setSelectedScreenTimeId(null);
 
       await fetchScreenTimes();
     } catch (error) {
       console.error(error);
 
       toast.error(error.response?.data?.message || "Failed to delete screen time");
+    } finally {
+      setIsDeletingScreenTime(false);
     }
   };
   // ==============================
@@ -359,21 +370,24 @@ const ChildProfile = () => {
       setSleepLoading(false);
     }
   };
-  const handleDeleteSleep = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this record?");
-
-    if (!confirmed) {
-      return;
-    }
+  const handleDeleteSleep = async () => {
     try {
-      await deleteSleep(id);
+      setIsDeletingSleep(true);
+
+      await deleteSleep(selectedSleepId);
 
       toast.success("Sleep record deleted successfully!");
+
+      setShowSleepDeleteModal(false);
+      setSelectedSleepId(null);
 
       await fetchSleepRecords();
     } catch (error) {
       console.error(error);
+
       toast.error(error.response?.data?.message || "Failed to delete sleep record");
+    } finally {
+      setIsDeletingSleep(false);
     }
   };
   // ==============================
@@ -449,22 +463,24 @@ const ChildProfile = () => {
       setOutdoorLoading(false);
     }
   };
-  const handleDeleteOutdoorActivity = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this record?");
-
-    if (!confirmed) {
-      return;
-    }
+  const handleDeleteOutdoorActivity = async () => {
     try {
-      await deleteOutdoorActivity(id);
+      setIsDeletingOutdoor(true);
+
+      await deleteOutdoorActivity(selectedOutdoorId);
 
       toast.success("Outdoor activity deleted successfully!");
+
+      setShowOutdoorDeleteModal(false);
+      setSelectedOutdoorId(null);
 
       await fetchOutdoorActivities();
     } catch (error) {
       console.error(error);
 
       toast.error(error.response?.data?.message || "Failed to delete outdoor activity");
+    } finally {
+      setIsDeletingOutdoor(false);
     }
   };
   // ==============================
@@ -481,7 +497,7 @@ const ChildProfile = () => {
 
   if (!child) {
     return (
-      <div className="max-w-4xl mx-auto p-8">
+      <div className="max-w-6xl mx-auto p-8">
         <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-10 text-center">
           <p className="text-lg text-gray-600">Loading child profile...</p>
         </div>
@@ -570,9 +586,9 @@ const ChildProfile = () => {
   // ==============================
   // Render
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <div className="flex items-start justify-between mb-8">
-        <h1 className="text-4xl font-bold">Child Profile</h1>
+    <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold">Child Profile</h1>
 
         {!isEditing && (
           <div className="flex gap-3">
@@ -616,6 +632,11 @@ const ChildProfile = () => {
         screenTimeFormRef={screenTimeFormRef}
         screenTimeChartData={screenTimeChartData}
         screenTimeChartOptions={screenTimeChartOptions}
+        showDeleteModal={showScreenTimeDeleteModal}
+        setShowDeleteModal={setShowScreenTimeDeleteModal}
+        selectedScreenTimeId={selectedScreenTimeId}
+        setSelectedScreenTimeId={setSelectedScreenTimeId}
+        isDeleting={isDeletingScreenTime}
       />
 
       <SleepSection
@@ -631,6 +652,10 @@ const ChildProfile = () => {
         sleepFormRef={sleepFormRef}
         sleepChartData={sleepChartData}
         sleepChartOptions={sleepChartOptions}
+        showDeleteModal={showSleepDeleteModal}
+        setShowDeleteModal={setShowSleepDeleteModal}
+        setSelectedSleepId={setSelectedSleepId}
+        isDeleting={isDeletingSleep}
       />
 
       <OutdoorSection
@@ -646,11 +671,23 @@ const ChildProfile = () => {
         outdoorFormRef={outdoorFormRef}
         outdoorChartData={outdoorChartData}
         outdoorChartOptions={outdoorChartOptions}
+        showDeleteModal={showOutdoorDeleteModal}
+        setShowDeleteModal={setShowOutdoorDeleteModal}
+        setSelectedOutdoorId={setSelectedOutdoorId}
+        isDeleting={isDeletingOutdoor}
       />
 
       {showDeleteModal && (
-        <DeleteChildModal
-          child={child}
+        <ConfirmationModal
+          title="Delete Child"
+          message={
+            <>
+              Are you sure you want to permanently delete <strong>{child.name}</strong>'s profile?
+              <br />
+              <br />
+              This action cannot be undone.
+            </>
+          }
           isDeleting={isDeleting}
           onCancel={() => setShowDeleteModal(false)}
           onDelete={handleDelete}

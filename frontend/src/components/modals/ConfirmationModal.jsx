@@ -1,14 +1,11 @@
-const DeleteChildModal = ({ child, isDeleting, onCancel, onDelete }) => {
+const ConfirmDeleteModal = ({ title, message, isDeleting, onCancel, onDelete }) => {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-gray-900">Delete Child</h2>
-        <p className="mt-4 text-gray-600 leading-relaxed">
-          Are you sure you want to permanently delete <strong>{child.name}</strong>'s profile?
-          <br />
-          <br />
-          This action cannot be undone.
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+
+        <p className="mt-4 text-gray-600 leading-relaxed">{message}</p>
+
         <div className="flex justify-end gap-4 mt-8">
           <button
             type="button"
@@ -18,6 +15,7 @@ const DeleteChildModal = ({ child, isDeleting, onCancel, onDelete }) => {
           >
             Cancel
           </button>
+
           <button
             type="button"
             disabled={isDeleting}
@@ -32,4 +30,4 @@ const DeleteChildModal = ({ child, isDeleting, onCancel, onDelete }) => {
   );
 };
 
-export default DeleteChildModal;
+export default ConfirmDeleteModal;

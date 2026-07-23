@@ -1,4 +1,5 @@
 import { Line } from "react-chartjs-2";
+import ConfirmationModal from "../modals/ConfirmationModal";
 
 const ScreenTimeSection = ({
   screenTimeData,
@@ -13,10 +14,16 @@ const ScreenTimeSection = ({
   screenTimeFormRef,
   screenTimeChartData,
   screenTimeChartOptions,
+
+  showDeleteModal,
+  setShowDeleteModal,
+  setSelectedScreenTimeId,
+  isDeleting,
 }) => {
   return (
     <>
       <form
+        ref={screenTimeFormRef}
         onSubmit={handleScreenTimeSubmit}
         className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-8"
       >
@@ -136,7 +143,10 @@ const ScreenTimeSection = ({
 
               <div className="flex gap-3 mt-4">
                 <button
-                  onClick={() => handleDeleteScreenTime(record._id)}
+                  onClick={() => {
+                    setSelectedScreenTimeId(record._id);
+                    setShowDeleteModal(true);
+                  }}
                   className="min-w-[90px] bg-red-600 hover:enabled:bg-red-700 text-white font-medium px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer"
                 >
                   Delete
@@ -184,6 +194,22 @@ const ScreenTimeSection = ({
           </div>
         )}
       </div>
+      {showDeleteModal && (
+        <ConfirmationModal
+          title="Delete Screen Time Record"
+          message={
+            <>
+              Are you sure you want to permanently delete this screen time record?
+              <br />
+              <br />
+              This action cannot be undone.
+            </>
+          }
+          isDeleting={isDeleting}
+          onCancel={() => setShowDeleteModal(false)}
+          onDelete={handleDeleteScreenTime}
+        />
+      )}
     </>
   );
 };

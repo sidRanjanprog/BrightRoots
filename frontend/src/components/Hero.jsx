@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Hero = () => {
+  const { isLoggedIn } = useAuth();
   return (
-    <section className="bg-gradient-to-b from-green-50 to-white py-20">
+    <section className="bg-linear-to-b from-green-50 to-white py-20">
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
         {/* Left Side */}
         <div>
@@ -15,18 +17,26 @@ const Hero = () => {
           </h1>
 
           <p className="mt-6 text-lg text-gray-600">
-            Support your child's growth through healthy habits, balanced screen
-            use, better sleep, outdoor activity, nutrition guidance and
-            personalized parenting insights.
+            Support your child's growth through healthy habits, balanced screen use, better sleep,
+            outdoor activity, nutrition guidance and personalized parenting insights.
           </p>
 
           <div className="mt-8 flex gap-4">
-            <Link
-              to="/register"
-              className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold"
-            >
-              Get Started
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                to="/dashboard"
+                className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/register"
+                className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+              >
+                Get Started
+              </Link>
+            )}
 
             <a
               href="#features"

@@ -22,10 +22,7 @@ const createScreenTime = async (req, res) => {
       });
     }
 
-    if (
-      selectedDate.getFullYear() < 2000 ||
-      selectedDate.getFullYear() > today.getFullYear()
-    ) {
+    if (selectedDate.getFullYear() < 2000 || selectedDate.getFullYear() > today.getFullYear()) {
       return res.status(400).json({
         success: false,
         message: "Invalid year",
@@ -44,10 +41,19 @@ const createScreenTime = async (req, res) => {
       });
     }
 
+    const duration = Number(durationMinutes);
+
+    if (duration <= 0 || duration > 1440) {
+      return res.status(400).json({
+        success: false,
+        message: "Screen time must be between 1 and 1440 minutes.",
+      });
+    }
+
     const screenTime = await ScreenTime.create({
       child: childId,
       date,
-      durationMinutes,
+      durationMinutes: duration,
       activityType,
     });
 
@@ -122,9 +128,8 @@ const updateScreenTime = async (req, res) => {
       });
     }
 
-    if (req.body.date) {
+    if (req.body.date !== undefined) {
       const selectedDate = new Date(req.body.date);
-
       const today = new Date();
 
       if (isNaN(selectedDate.getTime())) {
@@ -141,10 +146,7 @@ const updateScreenTime = async (req, res) => {
         });
       }
 
-      if (
-        selectedDate.getFullYear() < 2000 ||
-        selectedDate.getFullYear() > today.getFullYear()
-      ) {
+      if (selectedDate.getFullYear() < 2000 || selectedDate.getFullYear() > today.getFullYear()) {
         return res.status(400).json({
           success: false,
           message: "Invalid year",
@@ -152,12 +154,25 @@ const updateScreenTime = async (req, res) => {
       }
     }
 
+    if (req.body.durationMinutes !== undefined) {
+      const duration = Number(req.body.durationMinutes);
+
+      if (duration <= 0 || duration > 1440) {
+        return res.status(400).json({
+          success: false,
+          message: "Screen time must be between 1 and 1440 minutes.",
+        });
+      }
+    }
+
     screenTime.durationMinutes =
-      req.body.durationMinutes || screenTime.durationMinutes;
+      req.body.durationMinutes !== undefined
+        ? Number(req.body.durationMinutes)
+        : screenTime.durationMinutes;
 
-    screenTime.activityType = req.body.activityType || screenTime.activityType;
+    screenTime.activityType = req.body.activityType ?? screenTime.activityType;
 
-    screenTime.date = req.body.date || screenTime.date;
+    screenTime.date = req.body.date ?? screenTime.date;
 
     await screenTime.save();
 

@@ -1,4 +1,5 @@
 import { Line } from "react-chartjs-2";
+import ConfirmationModal from "../modals/ConfirmationModal";
 const SleepSection = ({
   sleepData,
   sleepLoading,
@@ -12,6 +13,10 @@ const SleepSection = ({
   sleepFormRef,
   sleepChartData,
   sleepChartOptions,
+  showDeleteModal,
+  setShowDeleteModal,
+  setSelectedSleepId,
+  isDeleting,
 }) => {
   return (
     <>
@@ -135,7 +140,10 @@ const SleepSection = ({
 
               <div className="flex gap-3 mt-4">
                 <button
-                  onClick={() => handleDeleteSleep(record._id)}
+                  onClick={() => {
+                    setSelectedSleepId(record._id);
+                    setShowDeleteModal(true);
+                  }}
                   className="min-w-[90px] bg-red-600 hover:enabled:bg-red-700 text-white font-medium px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer"
                 >
                   Delete
@@ -184,6 +192,22 @@ const SleepSection = ({
           </div>
         )}
       </div>
+      {showDeleteModal && (
+        <ConfirmationModal
+          title="Delete Sleep Record"
+          message={
+            <>
+              Are you sure you want to permanently delete this sleep record?
+              <br />
+              <br />
+              This action cannot be undone.
+            </>
+          }
+          isDeleting={isDeleting}
+          onCancel={() => setShowDeleteModal(false)}
+          onDelete={handleDeleteSleep}
+        />
+      )}
     </>
   );
 };

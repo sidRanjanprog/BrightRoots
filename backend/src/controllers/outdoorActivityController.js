@@ -22,10 +22,7 @@ const createOutdoorActivity = async (req, res) => {
       });
     }
 
-    if (
-      selectedDate.getFullYear() < 2000 ||
-      selectedDate.getFullYear() > today.getFullYear()
-    ) {
+    if (selectedDate.getFullYear() < 2000 || selectedDate.getFullYear() > today.getFullYear()) {
       return res.status(400).json({
         success: false,
         message: "Invalid year",
@@ -44,11 +41,20 @@ const createOutdoorActivity = async (req, res) => {
       });
     }
 
+    const duration = Number(durationMinutes);
+
+    if (duration <= 0 || duration > 1440) {
+      return res.status(400).json({
+        success: false,
+        message: "Outdoor activity duration must be between 1 and 1440 minutes.",
+      });
+    }
+
     const activity = await OutdoorActivity.create({
       child: childId,
       date,
       activityType,
-      durationMinutes,
+      durationMinutes: duration,
     });
 
     res.status(201).json({
@@ -122,14 +128,8 @@ const updateOutdoorActivity = async (req, res) => {
       });
     }
 
-    activity.activityType = req.body.activityType || activity.activityType;
-
-    activity.durationMinutes =
-      req.body.durationMinutes || activity.durationMinutes;
-
-    if (req.body.date) {
+    if (req.body.date !== undefined) {
       const selectedDate = new Date(req.body.date);
-
       const today = new Date();
 
       if (isNaN(selectedDate.getTime())) {
@@ -146,10 +146,7 @@ const updateOutdoorActivity = async (req, res) => {
         });
       }
 
-      if (
-        selectedDate.getFullYear() < 2000 ||
-        selectedDate.getFullYear() > today.getFullYear()
-      ) {
+      if (selectedDate.getFullYear() < 2000 || selectedDate.getFullYear() > today.getFullYear()) {
         return res.status(400).json({
           success: false,
           message: "Invalid year",
@@ -157,7 +154,25 @@ const updateOutdoorActivity = async (req, res) => {
       }
     }
 
-    activity.date = req.body.date || activity.date;
+    if (req.body.durationMinutes !== undefined) {
+      const duration = Number(req.body.durationMinutes);
+
+      if (duration <= 0 || duration > 1440) {
+        return res.status(400).json({
+          success: false,
+          message: "Outdoor activity duration must be between 1 and 1440 minutes.",
+        });
+      }
+    }
+
+    activity.durationMinutes =
+      req.body.durationMinutes !== undefined
+        ? Number(req.body.durationMinutes)
+        : activity.durationMinutes;
+
+    activity.activityType = req.body.activityType ?? activity.activityType;
+
+    activity.date = req.body.date ?? activity.date;
 
     await activity.save();
 

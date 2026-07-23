@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import api from "../services/api";
 import logo from "../assets/logo/ankurpath-logo.png";
+import AuthLayout from "../components/layout/AuthLayout";
+import api from "../services/api";
+import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login, isLoggedIn } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -15,6 +18,12 @@ const Login = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -35,11 +44,9 @@ const Login = () => {
 
       const response = await api.post("/auth/login", payload);
 
-      localStorage.setItem("token", response.data.token);
-      
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      login(response.data.token, response.data.user);
 
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       console.error(error);
 
@@ -50,10 +57,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
+    <AuthLayout>
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-gray-100 p-8"
+        className="w-full bg-white rounded-2xl shadow-lg border border-gray-100 p-8"
       >
         {/* Back Button */}
         <Link
@@ -139,7 +146,7 @@ const Login = () => {
           </Link>
         </p>
       </form>
-    </div>
+    </AuthLayout>
   );
 };
 

@@ -44,10 +44,19 @@ const createSleep = async (req, res) => {
       });
     }
 
+    const hours = Number(sleepHours);
+
+    if (hours <= 0 || hours > 24) {
+      return res.status(400).json({
+        success: false,
+        message: "Sleep duration must be greater than 0 and cannot exceed 24 hours.",
+      });
+    }
+
     const sleep = await Sleep.create({
       child: childId,
       date,
-      sleepHours,
+      sleepHours: hours,
       sleepQuality,
     });
 
@@ -122,13 +131,8 @@ const updateSleep = async (req, res) => {
       });
     }
 
-    sleep.sleepHours = req.body.sleepHours || sleep.sleepHours;
-
-    sleep.sleepQuality = req.body.sleepQuality || sleep.sleepQuality;
-
-    if (req.body.date) {
+    if (req.body.date !== undefined) {
       const selectedDate = new Date(req.body.date);
-
       const today = new Date();
 
       if (isNaN(selectedDate.getTime())) {
@@ -145,10 +149,7 @@ const updateSleep = async (req, res) => {
         });
       }
 
-      if (
-        selectedDate.getFullYear() < 2000 ||
-        selectedDate.getFullYear() > today.getFullYear()
-      ) {
+      if (selectedDate.getFullYear() < 2000 || selectedDate.getFullYear() > today.getFullYear()) {
         return res.status(400).json({
           success: false,
           message: "Invalid year",
@@ -156,7 +157,23 @@ const updateSleep = async (req, res) => {
       }
     }
 
-    sleep.date = req.body.date || sleep.date;
+    if (req.body.sleepHours !== undefined) {
+      const hours = Number(req.body.sleepHours);
+
+      if (hours <= 0 || hours > 24) {
+        return res.status(400).json({
+          success: false,
+          message: "Sleep duration must be greater than 0 and cannot exceed 24 hours.",
+        });
+      }
+    }
+
+    sleep.sleepHours =
+      req.body.sleepHours !== undefined ? Number(req.body.sleepHours) : sleep.sleepHours;
+
+    sleep.sleepQuality = req.body.sleepQuality ?? sleep.sleepQuality;
+
+    sleep.date = req.body.date ?? sleep.date;
 
     await sleep.save();
 
